@@ -1,4 +1,4 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "HUD/Inv_HUDWidget.h"
+#include "Widgets/Inventory/Spatial/Inv_SpatialInventory.h"

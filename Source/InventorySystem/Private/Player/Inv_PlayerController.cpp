@@ -5,7 +5,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "Blueprint/UserWidget.h"
-#include "HUD/Inv_HUDWidget.h"
+#include "Widgets/HUD/Inv_HUDWidget.h"
 #include "Interaction/Inv_Highlightable.h"
 #include "Items/Components/Inv_ItemComponent.h"
 #include "Kismet/GameplayStatics.h"
