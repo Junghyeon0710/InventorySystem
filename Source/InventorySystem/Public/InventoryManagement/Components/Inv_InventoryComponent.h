@@ -4,18 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Inv_inventoryComponent.generated.h"
+#include "Inv_InventoryComponent.generated.h"
 
 
 class UInv_InventoryBase;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent),Blueprintable)
-class INVENTORYSYSTEM_API UInv_inventoryComponent : public UActorComponent
+class INVENTORYSYSTEM_API UInv_InventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
-	UInv_inventoryComponent();
+	UInv_InventoryComponent();
+
+	void ToggleInventoryMenu();
 
 protected:
 	virtual void BeginPlay() override;
@@ -31,4 +33,8 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TSubclassOf<UInv_InventoryBase> InventoryMenuClass;
+
+	bool bInventoryMenuOpen;
+	void OpenInventoryMenu();
+	void CloseInventoryMenu();
 };
