@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "Items/Fragments/Inv_ItemFragment.h"
 #include "Types/Inv_GridTypes.h"
 #include "StructUtils/InstancedStruct.h"
 
@@ -25,6 +26,9 @@ struct INVENTORYSYSTEM_API FInv_ItemManifest
 	FGameplayTag GetItemType() const {return ItemType;}
 
 private:
+
+	UPROPERTY(EditAnywhere, Category="Inventory" , meta = (ExcludeBaseStruct))
+	TArray<TInstancedStruct<FInv_ItemFragment>> Fragments;
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	EInv_ItemCategory ItemCategory{EInv_ItemCategory::None};
