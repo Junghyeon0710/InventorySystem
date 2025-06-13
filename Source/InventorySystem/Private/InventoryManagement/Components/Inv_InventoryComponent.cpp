@@ -22,7 +22,28 @@ void UInv_InventoryComponent::TryAddItem(UInv_ItemComponent* ItemComponent)
 		NoRoomInInventory.Broadcast();
 		return;
 	}
+
+	if (Result.Item.IsValid() && Result.bStackable)
+	{
+		// 이미 인벤토리에 존재하는 아이템에 스택을 추가합니다. 
+		// 같은 종류의 새 아이템을 생성하는 것이 아니라, 기존의 수량만 업데이트합니다.
+		Server_AddStacksToItem(ItemComponent,Result.TotalRoomToFill,Result.Remainder);
+	}
+	else if (Result.TotalRoomToFill > 0)
+	{
+		// 이 아이템 종류는 인벤토리에 존재하지 않습니다. 
+		// 새로운 아이템을 생성하고 관련된 모든 슬롯을 업데이트합니다.
+		Server_AddNewItem(ItemComponent,Result.bStackable ? Result.TotalRoomToFill : 0);
+	}
+}
+
+void UInv_InventoryComponent::Server_AddNewItem_Implementation(UInv_ItemComponent* ItemComponent, int32 StackCount)
+{
 	
+}
+
+void UInv_InventoryComponent::Server_AddStacksToItem_Implementation(UInv_ItemComponent* ItemComponent, int32 StackCount, int32 Remainder)
+{
 }
 
 void UInv_InventoryComponent::ToggleInventoryMenu()
