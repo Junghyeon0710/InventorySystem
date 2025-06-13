@@ -26,6 +26,7 @@ public class InventorySystem : ModuleRules
 			new string[]
 			{
 				"Core",
+				"NetCore"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
