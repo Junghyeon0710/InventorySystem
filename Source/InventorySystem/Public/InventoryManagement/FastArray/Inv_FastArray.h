@@ -7,6 +7,7 @@
 
 class UInv_InventoryComponent;
 class UInv_InventoryItem;
+class UInv_ItemComponent;
 
 /** 인벤토리 안의 단일 항목 */
 USTRUCT(BlueprintType)
@@ -46,14 +47,14 @@ public:
 		return FastArrayDeltaSerialize<FInv_InventoryEntry,FInv_InventoryFastArray>(Entries,DeltaParms,*this);
 	}
 
-	UInv_InventoryItem* AddEntry(UInv_InventoryComponent* ItemComponent);
+	UInv_InventoryItem* AddEntry(UInv_ItemComponent* ItemComponent);
 	UInv_InventoryItem* AddEntry(UInv_InventoryItem* Item);
 	void RemoveEntry(UInv_InventoryItem* Item);
 
 private:
 	friend UInv_InventoryComponent;
 
-	UPROPERTY(NotReplicated)
+	UPROPERTY()
 	TArray<FInv_InventoryEntry> Entries;
 	
 	UPROPERTY(NotReplicated)
@@ -63,5 +64,5 @@ private:
 template<>
 struct TStructOpsTypeTraits<FInv_InventoryFastArray> : public  TStructOpsTypeTraitsBase2<FInv_InventoryFastArray>
 {
-	enum { WithNetDeltaSerializer = true  // 이 타입은 델타 직렬화를 지원한다};
+	enum { WithNetDeltaSerializer = true };// 이 타입은 델타 직렬화를 지원한다};
 };
