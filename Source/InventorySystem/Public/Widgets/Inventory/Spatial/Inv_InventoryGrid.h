@@ -37,6 +37,7 @@ private:
 	 void ConstructGrid();
 	FInv_SlotAvailabilityResult HasRoomForItem(const UInv_InventoryItem* Item) const;
 	FInv_SlotAvailabilityResult HasRoomForItem(const FInv_ItemManifest& Manifest) const;
+	void AddItemToIndices(const FInv_SlotAvailabilityResult& Result, UInv_InventoryItem* NewItem);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,meta = (AllowPrivateAccess = "ture"), Category="Inventory")
 	EInv_ItemCategory ItemCategory;
