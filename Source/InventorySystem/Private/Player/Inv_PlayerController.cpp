@@ -77,7 +77,7 @@ void AInv_PlayerController::PrimaryInteract()
 		return;
 	}
 
-	InventoryComponent->TryAddItem(ItemComponent);
+e	InventoryComponent->TryAddItem(ItemComponent);
 
 }
 
