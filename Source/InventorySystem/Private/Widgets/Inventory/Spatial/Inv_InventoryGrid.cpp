@@ -10,8 +10,10 @@
 #include "InventoryManagement/Utils/Inv_InventoryStatics.h"
 #include "Items/Inv_InventoryItem.h"
 #include "Items/Components/Inv_ItemComponent.h"
+#include "Items/Fragments/Inv_FragmentTags.h"
 #include "Widgets/Inventory/GirdSlots/Inv_GridSlot.h"
 #include "Widgets/Utils/Inv_WidgetUtils.h"
+#include "Items/Fragments/Inv_ItemFragment.h"
 
 void UInv_InventoryGrid::NativeOnInitialized()
 {
@@ -59,6 +61,14 @@ void UInv_InventoryGrid::AddItem(UInv_InventoryItem* Item)
 
 void UInv_InventoryGrid::AddItemToIndices(const FInv_SlotAvailabilityResult& Result, UInv_InventoryItem* NewItem)
 {
+	const FInv_GridFragment* GridFragment = GetFragment<FInv_GridFragment>(NewItem,FragmentTags::GridFragment);
+	const FInv_ImageFragment* ImageFragment = GetFragment<FInv_ImageFragment>(NewItem,FragmentTags::IconFragment);
+	if (!GridFragment || !ImageFragment)
+	{
+		return;
+	}
+
+	
 }
 
 void UInv_InventoryGrid::ConstructGrid()
