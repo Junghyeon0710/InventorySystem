@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Inv_GridSlot.generated.h"
 
+class UInv_InventoryItem;
 class UImage;
 
 UENUM(BlueprintType)
@@ -29,9 +30,24 @@ public:
 	void SetTitleIndex(int32 Index) { TitleIndex = Index;};
 	int32 GetTitleIndex() const {return TitleIndex;}
 	EInv_GridSlotState GetState() const {return GridSlotState;}
+	TWeakObjectPtr<UInv_InventoryItem> GetInventoryItem() const {return InventoryItem;}
+	void SetInventoryItem(UInv_InventoryItem* Item);
+	int32 GetIndex() const {return UpperLeftIndex;}
+	void SetIndex(int32 Index) {UpperLeftIndex = Index;}
+	int32 GetUpperLeftIndex() const {return UpperLeftIndex;}
+	void SetUpperLeftIndex(int32 Index) {UpperLeftIndex = Index;}
+	void SetStackCount(int32 Count) {StackCount = Count;}
+	int32 GetStackCount() const {return StackCount;}
+	bool IsAvailable() const {return bAvailable;}
+	void SetAvailable(bool bIsAvailable) {bAvailable = bIsAvailable;}
+
 
 private:
 	int32 TitleIndex;
+	int32 StackCount;
+	int32 UpperLeftIndex{INDEX_NONE};
+	TWeakObjectPtr<UInv_InventoryItem> InventoryItem;
+	bool bAvailable;
 
 	UPROPERTY(meta  = (BindWidget))
 	TObjectPtr<UImage> Image_GridSlot;
