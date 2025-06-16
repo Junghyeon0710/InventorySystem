@@ -77,6 +77,9 @@ private:
 
 	UFUNCTION()
 	void AddStacks(const FInv_SlotAvailabilityResult& Result);
+
+	UFUNCTION()
+	void OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
 	
 	FIntPoint GetItemDimensions(const FInv_ItemManifest& Manifest) const;
 	

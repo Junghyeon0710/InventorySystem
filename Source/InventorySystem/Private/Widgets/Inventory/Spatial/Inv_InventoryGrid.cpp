@@ -211,7 +211,7 @@ int32 UInv_InventoryGrid::GetStackAmount(const UInv_GridSlot* GridSlot) const
 	if ( const int32 UpperLeftIndex = GridSlot->GetUpperLeftIndex() ; UpperLeftIndex != INDEX_NONE)
 	{
 		UInv_GridSlot* UpperLeftGridSlot = GridSlots[UpperLeftIndex];
-		CurrentSLotStackCount += UpperLeftGridSlot->GetStackCount();
+		CurrentSLotStackCount = UpperLeftGridSlot->GetStackCount();
 	}
 	return CurrentSLotStackCount;
 }
@@ -237,6 +237,11 @@ void UInv_InventoryGrid::AddStacks(const FInv_SlotAvailabilityResult& Result)
 			UpdateGridSlots(Result.Item.Get(),Availability.Index, Result.bStackable, Availability.AmountToFill);
 		}
 	}
+}
+
+void UInv_InventoryGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Slotted Item Clicked"));
 }
 
 FIntPoint UInv_InventoryGrid::GetItemDimensions(const FInv_ItemManifest& Manifest) const
@@ -292,6 +297,7 @@ UInv_SlottedItem* UInv_InventoryGrid::CreateSlottedItem(UInv_InventoryItem* Item
 	SlottedItem->SetIsStackable(bStackable);
 	const int32 StackUpdateAmount = bStackable ? StackAmount : 0;
 	SlottedItem->UpdateStackCount(StackUpdateAmount);
+	SlottedItem->OnSlottedItemClicked.AddDynamic(this, &ThisClass::OnSlottedItemClicked);
 
 	return SlottedItem;
 }
