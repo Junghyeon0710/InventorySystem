@@ -66,7 +66,7 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
  		
 		// 인덱스에 공간이 있는지
  		TSet<int32> TentativelyClaimed;
- 		if (!HasRoomAtIndex(GridSlot, GetItemDimensions(Manifest),CheckIndices,TentativelyClaimed))
+ 		if (!HasRoomAtIndex(GridSlot, GetItemDimensions(Manifest),CheckIndices,TentativelyClaimed, Manifest.GetItemType()))
  		{
  			continue;
  		}
@@ -77,13 +77,13 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
 	return Result;
 }
 
-bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlot* GridSlot, const FIntPoint& Dimensions, const TSet<int32>& CheckedIndices, TSet<int32>& OutTentativelyClaimed)
+bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlot* GridSlot, const FIntPoint& Dimensions, const TSet<int32>& CheckedIndices, TSet<int32>& OutTentativelyClaimed, const FGameplayTag& ItemType)
 {
 	bool bHasRoomAtIndex = true;
 
 	UInv_InventoryStatics::ForEach2D(GridSlots, GridSlot->GetIndex(), Dimensions, Columns, [&](const UInv_GridSlot* SubGridSlot)
 	{
-		if (CheckSlotConstraints(GridSlot,SubGridSlot, CheckedIndices, OutTentativelyClaimed))
+		if (CheckSlotConstraints(GridSlot,SubGridSlot, CheckedIndices, OutTentativelyClaimed, ItemType))
 		{
 			OutTentativelyClaimed.Add(SubGridSlot->GetIndex());
 		}
@@ -96,7 +96,7 @@ bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlot* GridSlot, const FIn
 	return bHasRoomAtIndex;
 }
 
-bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* GridSlot, const UInv_GridSlot* SubGridSlot,  const TSet<int32>& CheckedIndices, TSet<int32>& OutTentativelyClaimed) const
+bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* GridSlot, const UInv_GridSlot* SubGridSlot,  const TSet<int32>& CheckedIndices, TSet<int32>& OutTentativelyClaimed, const FGameplayTag& ItemType) const
 {
 	//인덱스가 이미 사용 됐는지
 	if (IsIndexClaimed(CheckedIndices, SubGridSlot->GetIndex()))
@@ -123,6 +123,12 @@ bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* GridSlot, con
 	{
 		return false;
 	}
+
+	// 아이템 타입이 맞는지
+	if (!DoesItemTypeMatch(SubItem, ItemType))
+	{
+		return false;
+	}
 	
 	return false;
 }
@@ -135,6 +141,11 @@ bool UInv_InventoryGrid::HasValidItem(const UInv_GridSlot* GridSlot) const
 bool UInv_InventoryGrid::IsUpperLeftSlot(const UInv_GridSlot* GridSlot, const UInv_GridSlot* SubGridSlot) const
 {
 	return SubGridSlot->GetUpperLeftIndex() == GridSlot->GetIndex();
+}
+
+bool UInv_InventoryGrid::DoesItemTypeMatch(const UInv_InventoryItem* SubItem, const FGameplayTag& ItemType) const
+{
+	return SubItem->GetItemManifest().GetItemType().MatchesAnyExact(ItemType);
 }
 
 FIntPoint UInv_InventoryGrid::GetItemDimensions(const FInv_ItemManifest& Manifest) const
