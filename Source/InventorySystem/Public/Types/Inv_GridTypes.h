@@ -34,7 +34,7 @@ struct FInv_SlotAvailabilityResult
 	FInv_SlotAvailabilityResult() {}
 	
 	TWeakObjectPtr<UInv_InventoryItem> Item;     // 검사 대상 아이템
-	int32 TotalRoomToFill{0};                    // 전체 그리드에서 필요한 총 공간
+	int32 TotalRoomToFill{0};                    // 이번에 채울 수 있었던 수량
 	int32 Remainder{0};                          // 공간 부족시 남은 아이템 수
 	bool bStackable{false};                      // 스택 가능한 아이템인지 여부
 	TArray<FInv_SlotAvailability> SlotAvailabilities;  // 가능한 슬롯들 정보 리스트

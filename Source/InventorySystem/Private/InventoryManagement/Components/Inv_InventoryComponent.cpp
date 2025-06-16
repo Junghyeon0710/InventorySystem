@@ -42,6 +42,7 @@ void UInv_InventoryComponent::TryAddItem(UInv_ItemComponent* ItemComponent)
 	{
 		// 이미 인벤토리에 존재하는 아이템에 스택을 추가합니다. 
 		// 같은 종류의 새 아이템을 생성하는 것이 아니라, 기존의 수량만 업데이트합니다.
+		OnStackChange.Broadcast(Result);
 		Server_AddStacksToItem(ItemComponent,Result.TotalRoomToFill,Result.Remainder);
 	}
 	else if (Result.TotalRoomToFill > 0)
