@@ -76,14 +76,30 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
  		{
  			continue;
  		}
-
- 		CheckIndices.Append(TentativelyClaimed);
-
- 		// 슬롯 채우는 양이 얼마나 되는지
+ 		
+ 		// 슬롯을 얼마나 채워야 되는지
  		const int32 AmountToFillInSlot = DetermineFillAmountForSlot(Result.bStackable, MaxStackSize, AmountToFill, GridSlot);
  		if (AmountToFillInSlot == 0)
  		{
  			continue;
+ 		}
+
+ 		CheckIndices.Append(TentativelyClaimed);
+
+ 		Result.TotalRoomToFill += AmountToFillInSlot;
+ 		Result.SlotAvailabilities.Emplace(
+			FInv_SlotAvailability{
+				HasValidItem(GridSlot) ? GridSlot->GetUpperLeftIndex() : GridSlot->GetIndex(),
+				Result.bStackable? AmountToFillInSlot : 0,
+				HasValidItem(GridSlot)
+			}
+ 		);
+
+ 		AmountToFill -= AmountToFillInSlot;
+ 		Result.Remainder = AmountToFill;
+ 		if (AmountToFill == 0)
+ 		{
+ 			return Result;
  		}
 	}
 	
