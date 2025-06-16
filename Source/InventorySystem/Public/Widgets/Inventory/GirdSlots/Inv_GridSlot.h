@@ -32,7 +32,7 @@ public:
 	EInv_GridSlotState GetState() const {return GridSlotState;}
 	TWeakObjectPtr<UInv_InventoryItem> GetInventoryItem() const {return InventoryItem;}
 	void SetInventoryItem(UInv_InventoryItem* Item);
-	int32 GetIndex() const {return UpperLeftIndex;}
+	int32 GetIndex() const {return TitleIndex;}
 	void SetIndex(int32 Index) {UpperLeftIndex = Index;}
 	int32 GetUpperLeftIndex() const {return UpperLeftIndex;}
 	void SetUpperLeftIndex(int32 Index) {UpperLeftIndex = Index;}

@@ -4,6 +4,7 @@
 #include "InventoryManagement/Components/Inv_inventoryComponent.h"
 #include "Items/Components/Inv_ItemComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Items/Inv_InventoryItem.h"
 
 #include "Widgets/Inventory/InventoryBase/Inv_InventoryBase.h"
 
