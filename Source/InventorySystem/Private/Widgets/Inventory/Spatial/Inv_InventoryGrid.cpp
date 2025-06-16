@@ -39,20 +39,12 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const UInv_Invent
 FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemManifest& Manifest) const
 {
 	FInv_SlotAvailabilityResult Result;
-	Result.TotalRoomToFill = 7;
-	Result.bStackable = true;
 
-	FInv_SlotAvailability SlotAvailability;
-	SlotAvailability.AmountToFill = 2;
-	SlotAvailability.Index = 0;
-	Result.SlotAvailabilities.Add(MoveTemp(SlotAvailability));
+	//스택으로 쌓을 수 있는 아이템인지
+	const FInv_StackableFragment* StackableFragment = Manifest.GetFragmentOfType<FInv_StackableFragment>();
+	Result.bStackable = StackableFragment != nullptr;
+
 	
-	FInv_SlotAvailability SlotAvailability2;
-	SlotAvailability.AmountToFill = 5;
-	SlotAvailability.Index = 1;
-	Result.SlotAvailabilities.Add(MoveTemp(SlotAvailability2));
-	
-	//Result.SlotAvailabilities.Add(MoveTemp(SlotAvailability));
 	
 	return Result;
 }
