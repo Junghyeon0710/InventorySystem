@@ -3,6 +3,8 @@
 #include "InventoryManagement/Components/Inv_InventoryComponent.h"
 #include "Items/Inv_InventoryItem.h"
 #include "Items/Components/Inv_ItemComponent.h"
+#include "Tests/ToolMenusTestUtilities.h"
+
 
 TArray<UInv_InventoryItem*> FInv_InventoryFastArray::GetItems() const
 {
@@ -93,4 +95,14 @@ void FInv_InventoryFastArray::RemoveEntry(UInv_InventoryItem* Item)
 			return;
 		}
 	}
+}
+
+UInv_InventoryItem* FInv_InventoryFastArray::FindFirstItemByType(const FGameplayTag& ItemType)
+{
+	auto* FoundItem = Entries.FindByPredicate([ItemType = ItemType](const FInv_InventoryEntry& Entry)
+	{
+		return IsValid(Entry.Item) && Entry.Item->GetItemManifest().GetItemType().MatchesTag(ItemType);
+	});
+
+	return FoundItem ? FoundItem->Item : nullptr;
 }
