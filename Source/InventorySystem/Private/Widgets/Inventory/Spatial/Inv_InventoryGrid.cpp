@@ -48,6 +48,15 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
 	const int32 MaxStackSize = Result.bStackable ? StackableFragment->GetMaxStackSize() : 1;
 	int32 AmountToFill = Result.bStackable ? StackableFragment->GetStackCount() : 1;
 	
+	for (const auto& GridSlot : GridSlots)
+	{
+		// 스택 쌓을게 없으면 종료
+		if (AmountToFill == 0)
+		{
+			break;
+		}
+		
+	}
 	
 	return Result;
 }
