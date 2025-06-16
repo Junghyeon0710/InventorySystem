@@ -83,7 +83,7 @@ bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlot* GridSlot, const FIn
 
 	UInv_InventoryStatics::ForEach2D(GridSlots, GridSlot->GetIndex(), Dimensions, Columns, [&](const UInv_GridSlot* SubGridSlot)
 	{
-		if (CheckSlotConstraints(GridSlot, CheckedIndices, OutTentativelyClaimed))
+		if (CheckSlotConstraints(GridSlot,SubGridSlot, CheckedIndices, OutTentativelyClaimed))
 		{
 			OutTentativelyClaimed.Add(SubGridSlot->GetIndex());
 		}
@@ -96,7 +96,7 @@ bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlot* GridSlot, const FIn
 	return bHasRoomAtIndex;
 }
 
-bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* SubGridSlot,  const TSet<int32>& CheckedIndices, TSet<int32>& OutTentativelyClaimed) const
+bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* GridSlot, const UInv_GridSlot* SubGridSlot,  const TSet<int32>& CheckedIndices, TSet<int32>& OutTentativelyClaimed) const
 {
 	//인덱스가 이미 사용 됐는지
 	if (IsIndexClaimed(CheckedIndices, SubGridSlot->GetIndex()))
@@ -110,6 +110,14 @@ bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* SubGridSlot, 
 		OutTentativelyClaimed.Add(SubGridSlot->GetIndex());
 		return true;
 	}
+
+	//만약 SubGridSlot이 해당 아이템의 좌측 상단 칸이 아니라면
+	if (!IsUpperLeftSlot(GridSlot, SubGridSlot))
+	{
+		return false;
+	}
+
+	
 	
 	return false;
 }
@@ -117,6 +125,11 @@ bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* SubGridSlot, 
 bool UInv_InventoryGrid::HasValidItem(const UInv_GridSlot* GridSlot) const
 {
 	return GridSlot->GetInventoryItem().IsValid();
+}
+
+bool UInv_InventoryGrid::IsUpperLeftSlot(const UInv_GridSlot* GridSlot, const UInv_GridSlot* SubGridSlot) const
+{
+	return SubGridSlot->GetUpperLeftIndex() == GridSlot->GetIndex();
 }
 
 FIntPoint UInv_InventoryGrid::GetItemDimensions(const FInv_ItemManifest& Manifest) const

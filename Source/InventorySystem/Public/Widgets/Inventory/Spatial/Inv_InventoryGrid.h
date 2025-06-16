@@ -58,8 +58,9 @@ private:
 		const FIntPoint& Dimensions,
 		const TSet<int32>& CheckedIndices,
 		TSet<int32>& OutTentativelyClaimed);
-	bool CheckSlotConstraints(const UInv_GridSlot* SubGridSlot, const TSet<int32>& CheckedIndices, TSet<int32>& OutTentativelyClaimed) const;
+	bool CheckSlotConstraints(const UInv_GridSlot* GridSlot, const UInv_GridSlot* SubGridSlot, const TSet<int32>& CheckedIndices, TSet<int32>& OutTentativelyClaimed) const;
 	bool HasValidItem(const UInv_GridSlot* GridSlot) const;
+	bool IsUpperLeftSlot(const UInv_GridSlot* GridSlot, const UInv_GridSlot* SubGridSlot) const;
 	
 	FIntPoint GetItemDimensions(const FInv_ItemManifest& Manifest) const;
 	
