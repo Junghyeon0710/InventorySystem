@@ -78,6 +78,13 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
  		}
 
  		CheckIndices.Append(TentativelyClaimed);
+
+ 		// 슬롯 채우는 양이 얼마나 되는지
+ 		const int32 AmountToFillInSlot = DetermineFillAmountForSlot(Result.bStackable, MaxStackSize, AmountToFill, GridSlot);
+ 		if (AmountToFillInSlot == 0)
+ 		{
+ 			continue;
+ 		}
 	}
 	
 	return Result;
@@ -173,6 +180,23 @@ bool UInv_InventoryGrid::IsInGridBounds(const int32& StartIndex, const FIntPoint
 	// EndRow: 시작 인덱스의 행(row) 위치 + 아이템의 세로 크기
 	const int32 EndRow = (StartIndex / Columns) + ItemDimensions.Y;
 	return EndColumn <= Columns && EndRow <= Rows;
+}
+
+int32 UInv_InventoryGrid::DetermineFillAmountForSlot(const bool bStackable, const int32 MaxStackSize, const int32 AmountFill, const UInv_GridSlot* GridSlot) const
+{
+	const int32 RoomInSlot = MaxStackSize - GetStackAmount(GridSlot);
+	return bStackable ? FMath::Min(RoomInSlot,AmountFill) : 1;
+}
+
+int32 UInv_InventoryGrid::GetStackAmount(const UInv_GridSlot* GridSlot) const
+{
+	int32 CurrentSLotStackCount = GridSlot->GetStackCount();
+	if ( const int32 UpperLeftIndex = GridSlot->GetUpperLeftIndex() ; UpperLeftIndex != INDEX_NONE)
+	{
+		UInv_GridSlot* UpperLeftGridSlot = GridSlots[UpperLeftIndex];
+		CurrentSLotStackCount += UpperLeftGridSlot->GetStackCount();
+	}
+	return CurrentSLotStackCount;
 }
 
 FIntPoint UInv_InventoryGrid::GetItemDimensions(const FInv_ItemManifest& Manifest) const
