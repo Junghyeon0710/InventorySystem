@@ -48,6 +48,7 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
 	const int32 MaxStackSize = Result.bStackable ? StackableFragment->GetMaxStackSize() : 1;
 	int32 AmountToFill = Result.bStackable ? StackableFragment->GetStackCount() : 1;
 
+	//중복 방지 TSet사용 
 	TSet<int32> CheckIndices;
  	for (const auto& GridSlot : GridSlots)
 	{
@@ -62,13 +63,15 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
  		{
  			continue;
  		}
-
  		
-
- 		if (!HasRoomAtIndex(GridSlot, GetItemDimensions(Manifest)))
+		// 인덱스에 공간이 있는지
+ 		TSet<int32> TentativelyClaimed;
+ 		if (!HasRoomAtIndex(GridSlot, GetItemDimensions(Manifest),CheckIndices,TentativelyClaimed))
  		{
  			continue;
  		}
+
+ 		CheckIndices.Append(TentativelyClaimed);
  		
 
  		
@@ -78,16 +81,28 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
 	return Result;
 }
 
-bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlot* GridSlot, const FIntPoint& Dimensions)
+bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlot* GridSlot, const FIntPoint& Dimensions, const TSet<int32>& CheckedIndices, TSet<int32>& OutTentativelyClaimed)
 {
 	bool bHasRoomAtIndex = true;
 
-	UInv_InventoryStatics::ForEach2D(GridSlots, GridSlot->GetIndex(), Dimensions, Columns, []()
+	UInv_InventoryStatics::ForEach2D(GridSlots, GridSlot->GetIndex(), Dimensions, Columns, [&](const UInv_GridSlot* SubGridSlot)
 	{
-		
+		if (CheckSlotConstraints(GridSlot))
+		{
+			OutTentativelyClaimed.Add(SubGridSlot->GetIndex());
+		}
+		else
+		{
+			bHasRoomAtIndex = false;
+		}
 	});
 	
 	return bHasRoomAtIndex;
+}
+
+bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* SubGridSlot) const
+{
+	return false;
 }
 
 FIntPoint UInv_InventoryGrid::GetItemDimensions(const FInv_ItemManifest& Manifest) const
