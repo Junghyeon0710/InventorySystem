@@ -47,14 +47,23 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
 	// 스택을 얼마나 더 쌓을 수 있는지
 	const int32 MaxStackSize = Result.bStackable ? StackableFragment->GetMaxStackSize() : 1;
 	int32 AmountToFill = Result.bStackable ? StackableFragment->GetStackCount() : 1;
-	
-	for (const auto& GridSlot : GridSlots)
+
+	TSet<int32> CheckIndices;
+ 	for (const auto& GridSlot : GridSlots)
 	{
 		// 스택 쌓을게 없으면 종료
 		if (AmountToFill == 0)
 		{
 			break;
 		}
+
+ 		//이 인덱스는 이미 사용했나
+ 		if (IsIndexClaimed(CheckIndices,GridSlot->GetIndex()))
+ 		{
+ 			continue;
+ 		}
+
+ 		
 		
 	}
 	
@@ -144,6 +153,11 @@ void UInv_InventoryGrid::UpdateGridSlots(UInv_InventoryItem* NewItem, const int3
 		GridSlot->SetOccupiedTexture();
 		GridSlot->SetAvailable(false);
 	});
+}
+
+bool UInv_InventoryGrid::IsIndexClaimed(const TSet<int32>& CheckedIndices, const int32 Index) const
+{
+	return CheckedIndices.Contains(Index);
 }
 
 FVector2D UInv_InventoryGrid::GetDrawSize(const FInv_GridFragment* GridFragment) const
