@@ -44,6 +44,9 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
 	const FInv_StackableFragment* StackableFragment = Manifest.GetFragmentOfType<FInv_StackableFragment>();
 	Result.bStackable = StackableFragment != nullptr;
 
+	// 스택을 얼마나 더 쌓을 수 있는지
+	const int32 MaxStackSize = Result.bStackable ? StackableFragment->GetMaxStackSize() : 1;
+	int32 AmountToFill = Result.bStackable ? StackableFragment->GetStackCount() : 1;
 	
 	
 	return Result;
