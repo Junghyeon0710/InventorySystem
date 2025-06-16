@@ -72,10 +72,6 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
  		}
 
  		CheckIndices.Append(TentativelyClaimed);
- 		
-
- 		
-		
 	}
 	
 	return Result;
@@ -87,7 +83,7 @@ bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlot* GridSlot, const FIn
 
 	UInv_InventoryStatics::ForEach2D(GridSlots, GridSlot->GetIndex(), Dimensions, Columns, [&](const UInv_GridSlot* SubGridSlot)
 	{
-		if (CheckSlotConstraints(GridSlot))
+		if (CheckSlotConstraints(GridSlot, CheckedIndices, OutTentativelyClaimed))
 		{
 			OutTentativelyClaimed.Add(SubGridSlot->GetIndex());
 		}
@@ -100,9 +96,27 @@ bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlot* GridSlot, const FIn
 	return bHasRoomAtIndex;
 }
 
-bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* SubGridSlot) const
+bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* SubGridSlot,  const TSet<int32>& CheckedIndices, TSet<int32>& OutTentativelyClaimed) const
 {
+	//인덱스가 이미 사용 됐는지
+	if (IsIndexClaimed(CheckedIndices, SubGridSlot->GetIndex()))
+	{
+		return false;
+	}
+
+	//이 슬롯에 이미 아이템이 들어있는지
+	if (!HasValidItem(SubGridSlot))
+	{
+		OutTentativelyClaimed.Add(SubGridSlot->GetIndex());
+		return true;
+	}
+	
 	return false;
+}
+
+bool UInv_InventoryGrid::HasValidItem(const UInv_GridSlot* GridSlot) const
+{
+	return GridSlot->GetInventoryItem().IsValid();
 }
 
 FIntPoint UInv_InventoryGrid::GetItemDimensions(const FInv_ItemManifest& Manifest) const
