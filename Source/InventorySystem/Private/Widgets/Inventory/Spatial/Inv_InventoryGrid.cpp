@@ -117,7 +117,12 @@ bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* GridSlot, con
 		return false;
 	}
 
-	
+	//스택 쌓을 수 있는 아이템인가?
+	UInv_InventoryItem* SubItem = SubGridSlot->GetInventoryItem().Get();
+	if (!SubItem->IsStackable())
+	{
+		return false;
+	}
 	
 	return false;
 }
