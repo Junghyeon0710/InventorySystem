@@ -63,6 +63,12 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
  		{
  			continue;
  		}
+
+ 		// 아이템이 그리드 영역에 있는지
+ 		if (!IsInGridBounds(GridSlot->GetIndex(), GetItemDimensions(Manifest)))
+ 		{
+ 			continue;
+ 		}
  		
 		// 인덱스에 공간이 있는지
  		TSet<int32> TentativelyClaimed;
@@ -153,6 +159,20 @@ bool UInv_InventoryGrid::IsUpperLeftSlot(const UInv_GridSlot* GridSlot, const UI
 bool UInv_InventoryGrid::DoesItemTypeMatch(const UInv_InventoryItem* SubItem, const FGameplayTag& ItemType) const
 {
 	return SubItem->GetItemManifest().GetItemType().MatchesTagExact(ItemType);
+}
+
+bool UInv_InventoryGrid::IsInGridBounds(const int32& StartIndex, const FIntPoint& ItemDimensions) const
+{
+	//시작 인덱스가 유효한 범위(0 이상, 전체 그리드 칸 수 이하)가 아니면 false 반환.
+	if (StartIndex < 0 || StartIndex >= GridSlots.Num())
+	{
+		return false;
+	}
+	// EndColumn: 시작 인덱스의 열(column) 위치 + 아이템의 가로 크기
+	const int32 EndColumn = (StartIndex % Columns) + ItemDimensions.X;
+	// EndRow: 시작 인덱스의 행(row) 위치 + 아이템의 세로 크기
+	const int32 EndRow = (StartIndex / Columns) + ItemDimensions.Y;
+	return EndColumn <= Columns && EndRow <= Rows;
 }
 
 FIntPoint UInv_InventoryGrid::GetItemDimensions(const FInv_ItemManifest& Manifest) const

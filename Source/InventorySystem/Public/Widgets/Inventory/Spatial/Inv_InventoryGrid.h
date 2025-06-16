@@ -16,6 +16,8 @@ class UInv_InventoryComponent;
 class UInv_GridSlot;
 class UCanvasPanel;
 class UInv_InventoryItem;
+struct FGameplayTag;
+
 /**
  * 
  */
@@ -69,6 +71,7 @@ private:
 	bool HasValidItem(const UInv_GridSlot* GridSlot) const;
 	bool IsUpperLeftSlot(const UInv_GridSlot* GridSlot, const UInv_GridSlot* SubGridSlot) const;
 	bool DoesItemTypeMatch(const UInv_InventoryItem* SubItem, const FGameplayTag& ItemType) const;
+	bool IsInGridBounds(const int32& StartIndex, const FIntPoint& ItemDimensions) const;
 	
 	FIntPoint GetItemDimensions(const FInv_ItemManifest& Manifest) const;
 	
