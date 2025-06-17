@@ -56,7 +56,7 @@ struct FInv_TieParameters
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Inventory")
-	FIntPoint TieCoordinats{};
+	FIntPoint TileCoordinats{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Inventory")
 	int32 TileIndex{INDEX_NONE};
@@ -67,5 +67,5 @@ struct FInv_TieParameters
 
 inline bool operator==(const FInv_TieParameters& A, const FInv_TieParameters& B)
 {
-	return A.TieCoordinats == B.TieCoordinats && A.TileIndex == B.TileIndex && A.TileQuadrant == B.TileQuadrant;
+	return A.TileCoordinats == B.TileCoordinats && A.TileIndex == B.TileIndex && A.TileQuadrant == B.TileQuadrant;
 }
