@@ -51,7 +51,7 @@ enum class EInv_TileQuadrant : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FInv_TieParameters
+struct FInv_TileParameters
 {
 	GENERATED_BODY()
 
@@ -65,7 +65,7 @@ struct FInv_TieParameters
 	EInv_TileQuadrant TileQuadrant{EInv_TileQuadrant::None};
 };
 
-inline bool operator==(const FInv_TieParameters& A, const FInv_TieParameters& B)
+inline bool operator==(const FInv_TileParameters& A, const FInv_TileParameters& B)
 {
 	return A.TileCoordinats == B.TileCoordinats && A.TileIndex == B.TileIndex && A.TileQuadrant == B.TileQuadrant;
 }

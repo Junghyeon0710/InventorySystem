@@ -38,6 +38,7 @@ void UInv_InventoryGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 	UpdateTileParameters(CanvasPos,MousePosition);
 }
 
+
 void UInv_InventoryGrid::UpdateTileParameters(const FVector2D& CanvasPosition, const FVector2D& MousePosition)
 {
 	const FIntPoint HoveredCoordinates = CalculateHoveredCoordinates(CanvasPosition,MousePosition);
@@ -46,7 +47,20 @@ void UInv_InventoryGrid::UpdateTileParameters(const FVector2D& CanvasPosition, c
 	TileParameters.TileCoordinats = HoveredCoordinates;
 	TileParameters.TileIndex = UInv_WidgetUtils::GetIndexFromPosition(HoveredCoordinates,Columns);
 	TileParameters.TileQuadrant = CalculateTileQuadrant(CanvasPosition,MousePosition);
+
+	OnTileParametersUpdated(TileParameters);
 }
+
+void UInv_InventoryGrid::OnTileParametersUpdated(const FInv_TileParameters& Parameters)
+{
+	if (!IsValid(HoverItem))
+	{
+		return;
+	}
+
+	
+}
+
 
 FIntPoint UInv_InventoryGrid::CalculateHoveredCoordinates(const FVector2D& CanvasPosition,const FVector2D& MousePosition) const
 {

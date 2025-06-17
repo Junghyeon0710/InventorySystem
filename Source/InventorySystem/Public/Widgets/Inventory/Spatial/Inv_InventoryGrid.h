@@ -86,6 +86,7 @@ private:
 	void UpdateTileParameters(const FVector2D& CanvasPosition, const FVector2D& MousePosition);
 	FIntPoint CalculateHoveredCoordinates(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const;
 	EInv_TileQuadrant CalculateTileQuadrant(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const;
+	void OnTileParametersUpdated(const FInv_TileParameters& Parameters);
 
 	UFUNCTION()
 	void AddStacks(const FInv_SlotAvailabilityResult& Result);
@@ -128,6 +129,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<UInv_HoverItem> HoverItem;
 
-	FInv_TieParameters TileParameters;
-	FInv_TieParameters LastTileParameters;
+	FInv_TileParameters TileParameters;
+	FInv_TileParameters LastTileParameters;
 };
