@@ -69,16 +69,50 @@ void UInv_InventoryGrid::OnTileParametersUpdated(const FInv_TileParameters& Para
 	CurrentQueryResult = CheckHoverPosition(StartingCoordinate, Dimensions);
 }
 
-FInv_SpaceQueryResult UInv_InventoryGrid::CheckHoverPosition(const FIntPoint& Position, const FIntPoint& Dimensions) const
+FInv_SpaceQueryResult UInv_InventoryGrid::CheckHoverPosition(const FIntPoint& Position, const FIntPoint& Dimensions)
 {
 	FInv_SpaceQueryResult Result;
-
-	// In the gird bounds;
-	if (!IsInGridBounds(UInv_WidgetUtils::GetIndexFromPosition(Position, Columns),Dimensions))
+	
+	// 1. 주어진 위치 + 크기가 그리드 범위 안에 있는지 확인
+	if (!IsInGridBounds(UInv_WidgetUtils::GetIndexFromPosition(Position, Columns), Dimensions))
 	{
+		// 범위를 벗어나면 기본값 리턴 (bHasSpace = false)
 		return Result;
 	}
-	
+
+	// 2. 기본적으로 공간이 있다고 가정
+	Result.bHasSpace = true;
+
+	TSet<int32> OccupiedUpperLeftIndices;
+	// 3. 해당 위치에 이미 아이템이 있는지 확인
+	//    위치 범위 내에 있는 슬롯들을 순회하면서
+	//    유효한 아이템이 있으면 그 아이템의 좌측 상단 인덱스를 Set에 저장
+	UInv_InventoryStatics::ForEach2D(GridSlots, UInv_WidgetUtils::GetIndexFromPosition(Position, Columns), Dimensions, Columns,
+		[&](const UInv_GridSlot* GridSlot)
+	{
+		// 슬롯에 아이템이 있는 경우
+		if (GridSlot->GetInventoryItem().IsValid())
+		{
+			// 그 아이템의 시작 인덱스를 Set에 저장
+			OccupiedUpperLeftIndices.Add(GridSlot->GetUpperLeftIndex());
+
+			// 이미 아이템이 있으므로 기본적으로는 공간이 없음
+			Result.bHasSpace = false;
+		}
+	});
+
+	// 4. 만약 충돌한 아이템이 단 하나라면, 교환 가능성 있음 (스왑 가능)
+	if (OccupiedUpperLeftIndices.Num() == 1)
+	{
+		// Set에서 유일한 인덱스를 꺼내옴
+		const int32 Index = *OccupiedUpperLeftIndices.CreateConstIterator();
+
+		// 해당 인덱스의 아이템 정보를 결과에 저장
+		Result.ValidItem = GridSlots[Index]->GetInventoryItem().Get();
+		Result.UpperLeftIndex = GridSlots[Index]->GetUpperLeftIndex();
+	}
+
+	// 최종 결과 반환
 	return Result;
 }
 
