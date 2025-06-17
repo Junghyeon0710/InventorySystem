@@ -43,11 +43,11 @@ public:
 
 
 private:
-	int32 TitleIndex;
-	int32 StackCount;
+	int32 TitleIndex{INDEX_NONE};
+	int32 StackCount{0};
 	int32 UpperLeftIndex{INDEX_NONE};
 	TWeakObjectPtr<UInv_InventoryItem> InventoryItem;
-	bool bAvailable;
+	bool bAvailable{true};
 
 	UPROPERTY(meta  = (BindWidget))
 	TObjectPtr<UImage> Image_GridSlot;
