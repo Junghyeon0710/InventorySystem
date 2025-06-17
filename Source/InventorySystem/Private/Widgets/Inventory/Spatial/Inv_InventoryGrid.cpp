@@ -58,6 +58,9 @@ void UInv_InventoryGrid::OnTileParametersUpdated(const FInv_TileParameters& Para
 		return;
 	}
 
+	// Get Hoer Item's Dimensions
+	const FIntPoint Dimensions = HoverItem->GetGridDimensions();
+
 	
 }
 
