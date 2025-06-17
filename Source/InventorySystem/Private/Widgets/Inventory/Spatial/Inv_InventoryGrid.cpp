@@ -612,7 +612,16 @@ void UInv_InventoryGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEve
 		PickUp(ClickedInventoryItem,GridIndex);
 		return;
 	}
-	
+
+	// Do the hovered item and the cliced inventory itme share a type, and are they stackable,
+	if (IsSameStackable(ClickedInventoryItem))
+	{
+		
+		return;
+	}
+
+	//호버 아이템 스왑
+	SwapWithHoverItem(ClickedInventoryItem,GridIndex);
 }
 
 FIntPoint UInv_InventoryGrid::GetItemDimensions(const FInv_ItemManifest& Manifest) const
@@ -832,6 +841,30 @@ UUserWidget* UInv_InventoryGrid::GetHiddenCursorWidget()
 		HiddenCursorWidget = CreateWidget<UUserWidget>(GetOwningPlayer(),VisibleCursorWidgetClass);
 	}
 	return HiddenCursorWidget;
+}
+
+bool UInv_InventoryGrid::IsSameStackable(const UInv_InventoryItem* ClickedInventoryItem) const
+{
+	const bool bIsSameItem = ClickedInventoryItem == HoverItem->GetInventoryItem();
+	const bool bIsStackable = ClickedInventoryItem->IsStackable();
+	return bIsSameItem && bIsStackable && HoverItem->GetItemTag().MatchesTagExact(ClickedInventoryItem->GetItemManifest().GetItemType());
+}
+
+void UInv_InventoryGrid::SwapWithHoverItem(UInv_InventoryItem* ClickedInventoryItem, const int32 GridIndex)
+{
+	if ( !IsValid(HoverItem))
+	{
+		return;
+	}
+
+	UInv_InventoryItem* TempInventoryItem = HoverItem->GetInventoryItem();
+	const int32 TempStackCount = HoverItem->GetStackCount();
+	const bool bTempIsStackable = HoverItem->IsStackable();
+
+	AssignHoverItem(ClickedInventoryItem, GridIndex, HoverItem->GetPreviousGridIndex());
+	RemoveItemFromGrid(ClickedInventoryItem, GridIndex);
+	AddItemAtIndex(TempInventoryItem, ItemDropIndex, bTempIsStackable, TempStackCount);
+	UpdateGridSlots(TempInventoryItem, ItemDropIndex, bTempIsStackable, TempStackCount);
 }
 
 void UInv_InventoryGrid::ShowCursor()
