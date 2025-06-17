@@ -763,6 +763,7 @@ void UInv_InventoryGrid::OnGridSlotClicked(int32 GridIndex, const FPointerEvent&
 		return;
 	}
 
+	//이미 그 위치에 아이템이 하나 있고, 스왑 가능한 상황이면
 	if (CurrentQueryResult.ValidItem.IsValid() && GridSlots.IsValidIndex(CurrentQueryResult.UpperLeftIndex))
 	{
 		OnSlottedItemClicked(CurrentQueryResult.UpperLeftIndex, MouseEvent);
@@ -770,11 +771,37 @@ void UInv_InventoryGrid::OnGridSlotClicked(int32 GridIndex, const FPointerEvent&
 	}
 
 	auto GridSlot = GridSlots[ItemDropIndex];
+	//그 자리에 아이템이 없는 경우 (빈 슬롯)
 	if (!GridSlot->GetInventoryItem().IsValid())
 	{
-		
+		PutDownOnIndex(ItemDropIndex);
 	}
 }
+
+void UInv_InventoryGrid::PutDownOnIndex(const int32 Index)
+{
+	AddItemAtIndex(HoverItem->GetInventoryItem(), Index, HoverItem->IsStackable(), HoverItem->GetStackCount());
+	UpdateGridSlots(HoverItem->GetInventoryItem(), Index, HoverItem->IsStackable(), HoverItem->GetStackCount());
+	ClearHoverItem();
+}
+
+void UInv_InventoryGrid::ClearHoverItem()
+{
+	if (!IsValid(HoverItem))
+	{
+		return;
+	}
+
+	HoverItem->SetInventoryItem(nullptr);
+	HoverItem->SetIsStackable(false);
+	HoverItem->SetPreviousGridIndex(INDEX_NONE);
+	HoverItem->UpdateStackCount(0);
+	HoverItem->SetImageBrush(FSlateNoResource());
+	
+	HoverItem->RemoveFromParent();
+	HoverItem = nullptr;
+}
+
 
 void UInv_InventoryGrid::OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent)
 {
