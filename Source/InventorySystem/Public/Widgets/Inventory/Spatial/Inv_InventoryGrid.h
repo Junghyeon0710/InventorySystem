@@ -100,6 +100,16 @@ private:
 
 	UFUNCTION()
 	void OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
+
+	UFUNCTION()
+	void OnGridSlotClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
+
+	UFUNCTION()
+	void OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent);
+
+	UFUNCTION()
+	void OnGridSlotUnhovered(int32 GridIndex, const FPointerEvent& MouseEvent);
+	
 	
 	FIntPoint GetItemDimensions(const FInv_ItemManifest& Manifest) const;
 	
