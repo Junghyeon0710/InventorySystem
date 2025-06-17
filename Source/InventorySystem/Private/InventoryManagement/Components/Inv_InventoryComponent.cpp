@@ -38,7 +38,7 @@ void UInv_InventoryComponent::TryAddItem(UInv_ItemComponent* ItemComponent)
 		return;
 	}
 
-	if (Result.Item.IsValid() && Result.bStackable)
+	if (Result.Item.IsValid() && Result.bStackable && Result.Item->IsStackable())
 	{
 		// 이미 인벤토리에 존재하는 아이템에 스택을 추가합니다. 
 		// 같은 종류의 새 아이템을 생성하는 것이 아니라, 기존의 수량만 업데이트합니다.
