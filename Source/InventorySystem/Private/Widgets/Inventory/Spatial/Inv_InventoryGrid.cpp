@@ -73,6 +73,12 @@ FInv_SpaceQueryResult UInv_InventoryGrid::CheckHoverPosition(const FIntPoint& Po
 {
 	FInv_SpaceQueryResult Result;
 
+	// In the gird bounds;
+	if (!IsInGridBounds(UInv_WidgetUtils::GetIndexFromPosition(Position, Columns),Dimensions))
+	{
+		return Result;
+	}
+	
 	return Result;
 }
 
