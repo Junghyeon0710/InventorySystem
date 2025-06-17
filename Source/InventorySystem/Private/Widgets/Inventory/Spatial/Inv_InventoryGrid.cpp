@@ -63,11 +63,20 @@ void UInv_InventoryGrid::OnTileParametersUpdated(const FInv_TileParameters& Para
 	const FIntPoint Dimensions = HoverItem->GetGridDimensions();
 
 	// Calculate the starting coordinate for highlighting
-	const FIntPoint StartingCoordinate = CalulateStartingCoordinate(Parameters.TileCoordinats,Dimensions,Parameters.TileQuadrant);
+	const FIntPoint StartingCoordinate = CalculateStartingCoordinate(Parameters.TileCoordinats,Dimensions,Parameters.TileQuadrant);
+	ItemDropIndex = UInv_WidgetUtils::GetIndexFromPosition(StartingCoordinate,Columns);
 	
+	CurrentQueryResult = CheckHoverPosition(StartingCoordinate, Dimensions);
 }
 
-FIntPoint UInv_InventoryGrid::CalulateStartingCoordinate(const FIntPoint& Coordinate, const FIntPoint& Dimensions, const EInv_TileQuadrant& Quadrant) const
+FInv_SpaceQueryResult UInv_InventoryGrid::CheckHoverPosition(const FIntPoint& Position, const FIntPoint& Dimensions) const
+{
+	FInv_SpaceQueryResult Result;
+
+	return Result;
+}
+
+FIntPoint UInv_InventoryGrid::CalculateStartingCoordinate(const FIntPoint& Coordinate, const FIntPoint& Dimensions, const EInv_TileQuadrant& Quadrant) const
 {
 	// 아이템 가로, 세로가 짝수인지 여부를 1 or 0으로 저장
 	// 짝수면 1, 홀수면 0

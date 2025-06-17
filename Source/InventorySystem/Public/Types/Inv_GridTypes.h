@@ -69,3 +69,18 @@ inline bool operator==(const FInv_TileParameters& A, const FInv_TileParameters& 
 {
 	return A.TileCoordinats == B.TileCoordinats && A.TileIndex == B.TileIndex && A.TileQuadrant == B.TileQuadrant;
 }
+
+USTRUCT()
+struct FInv_SpaceQueryResult
+{
+	GENERATED_BODY()
+	
+	// 쿼리한 공간에 아이템이 없으면 true, 공간이 비어있음을 의미
+	bool bHasSpace{false};
+
+	// 스왑 가능한 아이템이 있으면 이 포인터가 유효함 (없으면 nullptr)
+	TWeakObjectPtr<UInv_InventoryItem> ValidItem = nullptr;
+
+	// 유효한 아이템이 있을 경우, 그 아이템의 좌측 상단 인덱스 (없으면 INDEX_NONE)
+	int32 UpperLeftIndex{INDEX_NONE};
+};
