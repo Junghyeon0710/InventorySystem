@@ -22,12 +22,20 @@ class INVENTORYSYSTEM_API UInv_ItemPopUp : public UUserWidget
 	GENERATED_BODY()
 public:
 	virtual void NativeOnInitialized() override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 
 	FPopUpMenuSplit OnSplit;
 	FPopUpMenuDrop OnDrop;
 	FPopUpMenuConsume OnConsume;
 	
 	int32 GetSplitAmount() const;
+	void CollapseSplitButton() const;
+	void CollapseConsumeButton() const;
+	void SetSliderParms(const float Max, const float Value) const;
+	FVector2D GetBoxSize() const;
+	void SetGridIndex(int32 Index) { GridIndex = Index; }
+	int32 GetGridIndex() const { return GridIndex; }
+	
 private:
 
 	UPROPERTY(meta  = (BindWidget))
@@ -43,12 +51,12 @@ private:
 	TObjectPtr<USlider> Slider_Split;
 
 	UPROPERTY(meta  = (BindWidget))
-	TObjectPtr<UTextBlock> Slider_SplitAmount;
+	TObjectPtr<UTextBlock> Text_SplitAmount;
 
 	UPROPERTY(meta  = (BindWidget))
 	TObjectPtr<USizeBox> SizeBox_Root;
 
-	int32 GrindIndex{INDEX_NONE};
+	int32 GridIndex{INDEX_NONE};
 
 	UFUNCTION()
 	void SplitButtonClicked();
@@ -61,4 +69,6 @@ private:
 
 	UFUNCTION()
 	void SliderValueChanged(float Value);
+
+
 };

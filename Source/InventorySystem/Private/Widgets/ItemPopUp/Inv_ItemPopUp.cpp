@@ -3,7 +3,9 @@
 
 #include "Widgets/ItemPopUp/Inv_ItemPopUp.h"
 #include "Components/Button.h"
+#include "Components/SizeBox.h"
 #include "Components/Slider.h"
+#include "Components/TextBlock.h"
 
 void UInv_ItemPopUp::NativeOnInitialized()
 {
@@ -15,6 +17,12 @@ void UInv_ItemPopUp::NativeOnInitialized()
 	Slider_Split->OnValueChanged.AddDynamic(this, &ThisClass::SliderValueChanged);
 }
 
+void UInv_ItemPopUp::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseLeave(InMouseEvent);
+	RemoveFromParent();
+}
+
 int32 UInv_ItemPopUp::GetSplitAmount() const
 {
 	return FMath::Floor(Slider_Split->GetValue());
@@ -22,7 +30,7 @@ int32 UInv_ItemPopUp::GetSplitAmount() const
 
 void UInv_ItemPopUp::SplitButtonClicked()
 {
-	if (OnSplit.ExecuteIfBound(GetSplitAmount() , GrindIndex))
+	if (OnSplit.ExecuteIfBound(GetSplitAmount() , GridIndex))
 	{
 		RemoveFromParent();
 	}
@@ -30,7 +38,7 @@ void UInv_ItemPopUp::SplitButtonClicked()
 
 void UInv_ItemPopUp::DropButtonClicked()
 {
-	if (OnDrop.ExecuteIfBound(GrindIndex))
+	if (OnDrop.ExecuteIfBound(GridIndex))
 	{
 		RemoveFromParent();
 	}
@@ -38,7 +46,7 @@ void UInv_ItemPopUp::DropButtonClicked()
 
 void UInv_ItemPopUp::ConsumeButtonClicked()
 {
-	if (OnConsume.ExecuteIfBound(GrindIndex))
+	if (OnConsume.ExecuteIfBound(GridIndex))
 	{
 		RemoveFromParent();
 	}
@@ -46,4 +54,31 @@ void UInv_ItemPopUp::ConsumeButtonClicked()
 
 void UInv_ItemPopUp::SliderValueChanged(float Value)
 {
+	Text_SplitAmount->SetText(FText::AsNumber(FMath::Floor(Value)));
+}
+
+void UInv_ItemPopUp::CollapseSplitButton() const
+{
+	Button_Split->SetVisibility(ESlateVisibility::Collapsed);
+	Slider_Split->SetVisibility(ESlateVisibility::Collapsed);
+	Text_SplitAmount->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void UInv_ItemPopUp::CollapseConsumeButton() const
+{
+	Button_Consume->SetVisibility(ESlateVisibility::Collapsed);
+	
+}
+
+void UInv_ItemPopUp::SetSliderParms(const float Max, const float Value) const
+{
+	Slider_Split->SetMaxValue(Max);
+	Slider_Split->SetMinValue(1);
+	Slider_Split->SetValue(Value);
+	Text_SplitAmount->SetText(FText::AsNumber(FMath::Floor(Value)));
+}
+
+FVector2D UInv_ItemPopUp::GetBoxSize() const
+{
+	return FVector2D(SizeBox_Root->GetWidthOverride(), SizeBox_Root->GetHeightOverride());
 }
