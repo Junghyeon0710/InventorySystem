@@ -639,7 +639,11 @@ void UInv_InventoryGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEve
 			FillInStack(RoomInClickedSlot, HoveredStackCount - RoomInClickedSlot, GridIndex);
 			return;
 		}
-		
+
+		if (RoomInClickedSlot == 0)
+		{
+			return;
+		}
 		return;
 	}
 
