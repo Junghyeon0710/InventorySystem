@@ -45,7 +45,7 @@ void UInv_InventoryGrid::UpdateTileParameters(const FVector2D& CanvasPosition, c
 	LastTileParameters = TileParameters;
 	TileParameters.TileCoordinats = HoveredCoordinates;
 	TileParameters.TileIndex = UInv_WidgetUtils::GetIndexFromPosition(HoveredCoordinates,Columns);
-	
+	TileParameters.TileQuadrant = CalculateTileQuadrant(CanvasPosition,MousePosition);
 }
 
 FIntPoint UInv_InventoryGrid::CalculateHoveredCoordinates(const FVector2D& CanvasPosition,const FVector2D& MousePosition) const
@@ -56,6 +56,46 @@ FIntPoint UInv_InventoryGrid::CalculateHoveredCoordinates(const FVector2D& Canva
 	};
 }
 
+EInv_TileQuadrant UInv_InventoryGrid::CalculateTileQuadrant(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const
+{
+	// 마우스 위치에서 캔버스(격자 전체)의 좌상단 위치를 빼면
+	// 현재 마우스가 캔버스 기준으로 얼마나 떨어졌는지 알 수 있음
+	// 그걸 타일 크기로 나눈 나머지를 구하면 → 타일 안에서의 상대 좌표가 됨
+	const float TileLocalX = FMath::Fmod((MousePosition.X - CanvasPosition.X), TileSize);
+	const float TileLocalY = FMath::Fmod((MousePosition.Y - CanvasPosition.Y), TileSize);
+
+	// 타일의 세로 중앙보다 위면 → 위쪽 절반
+	const bool bIsTop = TileLocalY < TileSize / 2;
+
+	// 타일의 가로 중앙보다 왼쪽이면 → 왼쪽 절반
+	const bool bIsLeft = TileLocalX < TileSize / 2;
+	
+	EInv_TileQuadrant HoveredTileQuadrant{EInv_TileQuadrant::None};
+
+	// 위쪽 + 왼쪽 → 좌상단 사분면
+	if (bIsTop && bIsLeft)
+	{
+		HoveredTileQuadrant = EInv_TileQuadrant::TopLeft;
+	}
+	// 위쪽 + 오른쪽 → 우상단 사분면
+	else if (bIsTop && !bIsLeft)
+	{
+		HoveredTileQuadrant = EInv_TileQuadrant::TopRight;
+	}
+	// 아래쪽 + 왼쪽 → 좌하단 사분면
+	else if (!bIsTop && bIsLeft)
+	{
+		HoveredTileQuadrant = EInv_TileQuadrant::BottomLeft;
+	}
+	// 아래쪽 + 오른쪽 → 우하단 사분면
+	else
+	{
+		HoveredTileQuadrant = EInv_TileQuadrant::BottomRight;
+	}
+	
+	// 계산된 사분면 결과 반환
+	return HoveredTileQuadrant;
+}
 
 FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const UInv_ItemComponent* ItemComponent)
 {
