@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "StructUtils/InstancedStruct.h"
 #include "Inv_ItemFragment.generated.h"
 
 class APlayerController;
@@ -102,6 +103,7 @@ struct FInv_LabeledNumberFragment : public FInv_InventoryItemFragment
 
 	virtual void Assimilate(UInv_CompositeBase* Composite) const override;
 	virtual void Manifest() override;
+	float GetValue() const {return Value;}
 
 	bool bRandomizeOnManifest{true};
 
@@ -151,31 +153,42 @@ private:
 };
 
 USTRUCT(BlueprintType)
-struct FInv_ConsumableFragment : public FInv_ItemFragment
+struct FInv_ConsumeModifier : public FInv_LabeledNumberFragment
 {
 	GENERATED_BODY()
 
 	virtual void OnConsume(APlayerController* PC) {}
+
+	//virtual void Assimilate(UInv_CompositeBase* Composite) const override;
 };
 
 USTRUCT(BlueprintType)
-struct FInv_HealthPotionFragment : public FInv_ConsumableFragment
+struct FInv_ConsumableFragment : public FInv_InventoryItemFragment
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category="Inventory")
-	float HealAmount = 20.f;
+	virtual void OnConsume(APlayerController* PC);
+	virtual void Assimilate(UInv_CompositeBase* Composite) const override;
+	virtual void Manifest() override;
 
+private:
+	
+	UPROPERTY(EditAnywhere, Category="Inventory", meta = (ExcludedBaseStruct))
+	TArray<TInstancedStruct<FInv_ConsumeModifier>> ConsumeModifiers;
+};
+
+USTRUCT(BlueprintType)
+struct FInv_HealthPotionFragment : public FInv_ConsumeModifier
+{
+	GENERATED_BODY()
+	
 	virtual void OnConsume(APlayerController* PC) override;
 };
 
 USTRUCT(BlueprintType)
-struct FInv_ManaPotionFragment : public FInv_ConsumableFragment
+struct FInv_ManaPotionFragment : public FInv_ConsumeModifier
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, Category="Inventory")
-	float HealAmount = 20.f;
 
 	virtual void OnConsume(APlayerController* PC) override;
 };
