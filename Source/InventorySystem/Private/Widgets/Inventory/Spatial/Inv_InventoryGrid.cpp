@@ -1115,6 +1115,8 @@ void UInv_InventoryGrid::OnPopUpMenuConsume(int32 Index)
 	UpperLeftGridSlot->SetStackCount(NewStackCount);
 	SlottedItems.FindChecked(UpperLeftIndex)->UpdateStackCount(NewStackCount);
 
+	InventoryComponent->Server_ConsumeItem(RightClickedItem);
+
 	if (NewStackCount <= 0)
 	{
 		RemoveItemFromGrid(RightClickedItem, Index);
