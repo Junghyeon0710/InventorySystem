@@ -44,6 +44,7 @@ public:
 	void HideCursor();
 	void SetOwningCanvas(UCanvasPanel* InOwningCanvas);
 	void DropItem();
+	bool HasHoverItem() const;
 private:
 
 	TWeakObjectPtr<UInv_InventoryComponent> InventoryComponent;
