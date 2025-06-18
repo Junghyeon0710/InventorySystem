@@ -665,13 +665,18 @@ void UInv_InventoryGrid::CreateItemPopUp(const int32 GridIndex)
 	{
 		return;
 	}
+	if (IsValid(GridSlots[GridIndex]->GetItemPopUp()))
+	{
+		return;
+	}
 	
 	ItemPopUp = CreateWidget<UInv_ItemPopUp>(this,ItemPopUpClass);
-
+	GridSlots[GridIndex]->SetItemPopUp(ItemPopUp);
+	
 	OwningCanvasPanel->AddChild(ItemPopUp);
 	UCanvasPanelSlot* CanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(ItemPopUp);
 	const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer());
-	CanvasSlot->SetPosition(MousePosition);
+	CanvasSlot->SetPosition(MousePosition - ItemPopupOffset);
 	CanvasSlot->SetSize(ItemPopUp->GetBoxSize());
 
 	
