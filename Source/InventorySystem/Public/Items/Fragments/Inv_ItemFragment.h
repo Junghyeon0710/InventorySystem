@@ -29,6 +29,19 @@ private:
 	
 };
 
+class UInv_CompositeBase;
+
+USTRUCT(BlueprintType)
+struct FInv_InventoryItemFragment : public FInv_ItemFragment
+{
+	GENERATED_BODY()
+
+	virtual void Assimilate(UInv_CompositeBase* Composite) const;
+protected:
+	bool MatchesWidgetTag(const UInv_CompositeBase* Composite) const;
+};
+
+
 USTRUCT(BlueprintType)
 struct FInv_GridFragment : public FInv_ItemFragment
 {

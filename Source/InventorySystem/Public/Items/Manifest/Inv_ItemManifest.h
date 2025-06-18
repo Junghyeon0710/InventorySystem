@@ -14,6 +14,7 @@
  * 모든 데이터를 담고 있습니다.
  */
 
+class UInv_CompositeBase;
 class UInv_InventoryItem;
 
 USTRUCT(BlueprintType)
@@ -24,6 +25,7 @@ struct INVENTORYSYSTEM_API FInv_ItemManifest
 	UInv_InventoryItem* Manifest(UObject* NewOuter);
 	EInv_ItemCategory GetItemCategory() const {return ItemCategory;}
 	FGameplayTag GetItemType() const {return ItemType;}
+	 void AssimilateInventoryFragment(UInv_CompositeBase* Composite) const;
 
 	template<typename T> requires std::derived_from<T, FInv_ItemFragment>
 	const T* GetFragmentOfTypeWithTag(const FGameplayTag& FragmentTag) const;
@@ -33,6 +35,9 @@ struct INVENTORYSYSTEM_API FInv_ItemManifest
 
 	template<typename T> requires std::derived_from<T, FInv_ItemFragment>
 	T* GetFragmentOfTypeMutable();
+
+	template<typename T> requires std::derived_from<T, FInv_ItemFragment>
+	TArray<const T*> GetAllFragmentOfType() const;
 
 	void SpawnPickupActor(const UObject* WorldContextObject, const FVector& SpawnLocation, const FRotator& SpawnRotation);
 
@@ -92,4 +97,18 @@ T* FInv_ItemManifest::GetFragmentOfTypeMutable()
 		}
 	}
 	return nullptr;
+}
+
+template <typename T> requires std::derived_from<T, FInv_ItemFragment>
+TArray<const T*> FInv_ItemManifest::GetAllFragmentOfType() const
+{
+	TArray<const T*> Result;
+	for (const TInstancedStruct<FInv_ItemFragment>& Fragment : Fragments)
+	{
+		if (const T* FragmentPtr = Fragment.GetPtr<T>())
+		{
+			Result.Add(FragmentPtr);
+		}
+	}
+	return Result;
 }
