@@ -111,7 +111,12 @@ void UInv_InventoryComponent::SpawnDroppedItem(UInv_InventoryItem* Item, int32 S
 	SpawnLocation.Z -= RelativeSpawnElevation;
 	const FRotator SpawnRotation = FRotator::ZeroRotator;
 
-	
+	FInv_ItemManifest Manifest = Item->GetItemManifestMutable();
+	if (FInv_StackableFragment* StackableFragment = Manifest.GetFragmentOfTypeMutable<FInv_StackableFragment>())
+	{
+		StackableFragment->SetStackCount(StackCount);
+	}
+	Manifest.SpawnPickupActor(this, SpawnLocation, SpawnRotation);
 }
 
 void UInv_InventoryComponent::ToggleInventoryMenu()

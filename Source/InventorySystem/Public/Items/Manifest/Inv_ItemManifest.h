@@ -34,6 +34,8 @@ struct INVENTORYSYSTEM_API FInv_ItemManifest
 	template<typename T> requires std::derived_from<T, FInv_ItemFragment>
 	T* GetFragmentOfTypeMutable();
 
+	void SpawnPickupActor(const UObject* WorldContextObject, const FVector& SpawnLocation, const FRotator& SpawnRotation);
+
 
 private:
 
@@ -45,6 +47,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	FGameplayTag ItemType;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSubclassOf<AActor> PickupActorClass;
 };
 
 template<typename T> requires std::derived_from<T, FInv_ItemFragment> //  requires std::derived_from<T, FInv_ItemFragment> 해당 파생된게 아니면 컴파일 단에서 에러
