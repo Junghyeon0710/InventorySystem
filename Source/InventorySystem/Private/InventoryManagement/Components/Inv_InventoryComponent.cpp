@@ -99,7 +99,7 @@ void UInv_InventoryComponent::Server_DropItem_Implementation(UInv_InventoryItem*
 		Item->SetTotalStackCount(NewStackCount);
 	}
 
-	
+	SpawnDroppedItem(Item,StackCount);
 }
 
 void UInv_InventoryComponent::SpawnDroppedItem(UInv_InventoryItem* Item, int32 StackCount)
@@ -111,7 +111,7 @@ void UInv_InventoryComponent::SpawnDroppedItem(UInv_InventoryItem* Item, int32 S
 	SpawnLocation.Z -= RelativeSpawnElevation;
 	const FRotator SpawnRotation = FRotator::ZeroRotator;
 
-	FInv_ItemManifest Manifest = Item->GetItemManifestMutable();
+	FInv_ItemManifest& Manifest = Item->GetItemManifestMutable();
 	if (FInv_StackableFragment* StackableFragment = Manifest.GetFragmentOfTypeMutable<FInv_StackableFragment>())
 	{
 		StackableFragment->SetStackCount(StackCount);

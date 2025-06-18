@@ -12,6 +12,7 @@ UInv_ItemComponent::UInv_ItemComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	PickupMessage = "E - Pick Up";
+	SetIsReplicatedByDefault(true);
 
 }
 

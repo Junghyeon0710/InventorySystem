@@ -713,6 +713,7 @@ void UInv_InventoryGrid::DropItem()
 		return;
 	}
 
+	InventoryComponent->Server_DropItem(HoverItem->GetInventoryItem(), HoverItem->GetStackCount());
 	
 
 	ClearHoverItem();
