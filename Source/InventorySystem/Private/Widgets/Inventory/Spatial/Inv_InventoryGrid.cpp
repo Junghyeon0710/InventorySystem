@@ -713,6 +713,8 @@ void UInv_InventoryGrid::DropItem()
 		return;
 	}
 
+	
+
 	ClearHoverItem();
 	ShowCursor();
 }
