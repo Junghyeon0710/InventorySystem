@@ -14,6 +14,8 @@
 #include "Items/Components/Inv_ItemComponent.h"
 #include "Widgets/Inventory/Spatial/Inv_InventoryGrid.h"
 #include "Widgets/ItemDescription/UInv_ItemDescription.h"
+#include "Blueprint/WidgetTree.h"
+#include "Widgets/Inventory/GirdSlots/Inv_EquippedGridSlot.h"
 
 void UInv_SpatialInventory::NativeOnInitialized()
 {
@@ -29,6 +31,21 @@ void UInv_SpatialInventory::NativeOnInitialized()
 	
 
 	ShowEquippables();
+
+	WidgetTree->ForEachWidget([this](UWidget* Widget)
+	{
+		UInv_EquippedGridSlot* EquippedGridSlot = Cast<UInv_EquippedGridSlot>(Widget);
+		if (IsValid(EquippedGridSlot))
+		{
+			EquippedGridSlots.Add(EquippedGridSlot);
+			EquippedGridSlot->EquippedGridSlotClicked.AddDynamic(this, &ThisClass::EquippedGridSLotClicked);
+		}
+	});
+}
+
+void UInv_SpatialInventory::EquippedGridSLotClicked(UInv_EquippedGridSlot* EquippedGridSlot, FGameplayTag EquipmentTypeTag)
+{
+	
 }
 
 FReply UInv_SpatialInventory::NativeOnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)

@@ -6,6 +6,7 @@
 #include "Widgets/Inventory/InventoryBase/Inv_InventoryBase.h"
 #include "Inv_SpatialInventory.generated.h"
 
+class UInv_EquippedGridSlot;
 class UInv_ItemDescription;
 class UCanvasPanel;
 class UInv_InventoryGrid;
@@ -31,6 +32,9 @@ public:
 	virtual void OnItemUnhovered() override;
 	virtual bool HasHoverItem() const override;
 private:
+
+	UPROPERTY()
+	TArray<TObjectPtr<UInv_EquippedGridSlot>> EquippedGridSlots;
 
 	UPROPERTY(meta  = (BindWidget))
 	TObjectPtr<UCanvasPanel> CanvasPanel;
@@ -74,6 +78,9 @@ private:
 
 	UFUNCTION()
 	void ShowConsumables();
+
+	UFUNCTION()
+	void EquippedGridSLotClicked(UInv_EquippedGridSlot* EquippedGridSlot, FGameplayTag EquipmentTypeTag);
 
 	UFUNCTION()
 	void ShowCraftables();
