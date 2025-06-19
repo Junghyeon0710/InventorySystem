@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Widgets/Inventory/InventoryBase/Inv_InventoryBase.h"
+#include "GameplayTagContainer.h"
 #include "Inv_SpatialInventory.generated.h"
 
 class UInv_EquippedGridSlot;
@@ -12,6 +13,7 @@ class UCanvasPanel;
 class UInv_InventoryGrid;
 class UWidgetSwitcher;
 class UButton;
+class UInv_HoverItem;
 
 /**
  * 
@@ -31,6 +33,7 @@ public:
 	virtual void OnItemHovered(UInv_InventoryItem* Item) override;
 	virtual void OnItemUnhovered() override;
 	virtual bool HasHoverItem() const override;
+	virtual UInv_HoverItem* GetHoverItem() const override;
 private:
 
 	UPROPERTY()
@@ -80,7 +83,7 @@ private:
 	void ShowConsumables();
 
 	UFUNCTION()
-	void EquippedGridSLotClicked(UInv_EquippedGridSlot* EquippedGridSlot, FGameplayTag EquipmentTypeTag);
+	void EquippedGridSLotClicked(UInv_EquippedGridSlot* EquippedGridSlot,const FGameplayTag& EquipmentTypeTag);
 
 	UFUNCTION()
 	void ShowCraftables();
