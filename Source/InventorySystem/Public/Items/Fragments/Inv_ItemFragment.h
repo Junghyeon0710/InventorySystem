@@ -206,7 +206,7 @@ struct FInv_EquipModifier : public FInv_LabeledNumberFragment
 };
 
 USTRUCT(BlueprintType)
-struct FInv_StrengthModifier : public FInv_LabeledNumberFragment
+struct FInv_StrengthModifier : public FInv_EquipModifier
 {
 	GENERATED_BODY()
 
@@ -223,6 +223,7 @@ struct FInv_EquipmentFragment : public FInv_InventoryItemFragment
 	void OnEquip(APlayerController* PC);
 	void OnUnequip(APlayerController* PC);
 	virtual void Assimilate(UInv_CompositeBase* Composite) const override;
+	virtual void Manifest() override;
 private:
 
 	UPROPERTY(EditAnywhere, Category="Inventory" )
