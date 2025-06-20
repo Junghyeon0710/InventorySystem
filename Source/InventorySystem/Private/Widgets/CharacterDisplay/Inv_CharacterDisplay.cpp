@@ -63,7 +63,7 @@ void UInv_CharacterDisplay::NativeTick(const FGeometry& MyGeometry, float InDelt
 	LastPosition = CurrentPosition;
 	CurrentPosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer());
 
-	const float HorizontalDelta =LastPosition.X = CurrentPosition.X;
+	const float HorizontalDelta = LastPosition.X - CurrentPosition.X;
 
 	if (!Mesh.IsValid())
 	{
