@@ -9,7 +9,8 @@
 AInv_ProxyMesh::AInv_ProxyMesh()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
+	SetReplicates(false);
+	
 	RootComponent = CreateDefaultSubobject<USceneComponent>("Root");
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>("Mesh");

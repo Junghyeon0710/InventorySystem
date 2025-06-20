@@ -18,6 +18,7 @@ class INVENTORYSYSTEM_API UInv_ItemDescription : public UInv_Composite
 public:
 
 		FVector2D GetSize() const;
+	virtual void SetVisibility(ESlateVisibility InVisibility) override;
 private:
 
 	UPROPERTY(meta = (BindWidget))

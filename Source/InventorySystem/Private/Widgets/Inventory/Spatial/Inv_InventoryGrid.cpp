@@ -917,6 +917,11 @@ void UInv_InventoryGrid::OnGridSlotClicked(int32 GridIndex, const FPointerEvent&
 		return;
 	}
 
+	if (!IsInGridBounds(ItemDropIndex, HoverItem->GetGridDimensions()))
+	{
+		return;
+	}
+	
 	auto GridSlot = GridSlots[ItemDropIndex];
 	//그 자리에 아이템이 없는 경우 (빈 슬롯)
 	if (!GridSlot->GetInventoryItem().IsValid())

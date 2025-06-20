@@ -18,6 +18,7 @@ public:
 	virtual void NativeOnInitialized() override;
 	virtual void ApplayFunction(FuncType Function) override;
 	virtual void Collapse() override;
+	TArray<UInv_CompositeBase*> GetChildren() {return Children;}
 	
 private:
 	UPROPERTY()
