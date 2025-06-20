@@ -91,12 +91,14 @@ void UInv_SpatialInventory::EquippedSlottedItemClicked(UInv_EquippedSlottedItem*
 	UInv_EquippedGridSlot* EquippedGridSlot = FindSlotWithEquippedItem(ItemToEquip);
 	
 	// 3. 해당 장착 슬롯의 InventoryItem을 nullptr로 설정하여 슬롯을 비웁니다.
+	ClearSlotOfItem(EquippedGridSlot);
 
+	Grid_Equippables->AssignHoverItem(ItemToUnequip);
+	
 	// 4. 장착 슬롯에서 장착된 아이템 위젯을 제거합니다.
-	//    - OnEquippedSlottedItemClicked 델리게이트 언바인드
-	//    - RemoveFromParent 호출
+	RemoveEquippedSlottedItem(SlottedItem);
 
-	// 5. 제거된 아이템을 HoverItem으로 설정하여 마우스로 들고 있는 상태로 만듭니다.
+
 
 	// 6. 현재 HoverItem이 있다면 (즉, 뭔가 들고 있었다면)
 	//    - HoverItem의 아이템을 새로 장착할 아이템으로 간주하고
@@ -302,4 +304,27 @@ void UInv_SpatialInventory::SetActiveGrid(UInv_InventoryGrid* Grid, UButton* But
 
 	DisableButton(Button);
 	Switcher->SetActiveWidget(Grid);
+}
+
+void UInv_SpatialInventory::ClearSlotOfItem(UInv_EquippedGridSlot* EquippedGridSlot)
+{
+	if (IsValid(EquippedGridSlot))
+	{
+		EquippedGridSlot->SetEquippedSlottedItem(nullptr);
+		EquippedGridSlot->SetInventoryItem(nullptr);
+	}
+}
+
+void UInv_SpatialInventory::RemoveEquippedSlottedItem(UInv_EquippedSlottedItem* EquippedSlottedItem)
+{
+	if (!IsValid(EquippedSlottedItem))
+	{
+		return;
+	}
+
+	if (EquippedSlottedItem->OnEquippedSlottedItemClicked.IsAlreadyBound(this, &ThisClass::EquippedSlottedItemClicked))
+	{
+		EquippedSlottedItem->OnEquippedSlottedItemClicked.RemoveDynamic(this, &ThisClass::EquippedSlottedItemClicked);
+	}
+	EquippedSlottedItem->RemoveFromParent();
 }

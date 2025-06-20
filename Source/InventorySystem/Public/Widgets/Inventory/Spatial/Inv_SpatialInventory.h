@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "Inv_SpatialInventory.generated.h"
 
+class UInv_EquippedSlottedItem;
 class UInv_EquippedGridSlot;
 class UInv_ItemDescription;
 class UCanvasPanel;
@@ -96,5 +97,8 @@ private:
 	bool CanEquipHoverItem(UInv_EquippedGridSlot* EquippedGridSlot, const FGameplayTag& EquipmentTypeTag) const;
 	UInv_EquippedGridSlot* FindSlotWithEquippedItem(UInv_InventoryItem* EquippedItem) const;
 	void SetActiveGrid(UInv_InventoryGrid* Grid, UButton* Button);
+	void ClearSlotOfItem(UInv_EquippedGridSlot* EquippedGridSlot);
+	void RemoveEquippedSlottedItem(UInv_EquippedSlottedItem* EquippedSlottedItem);
+	
 	TWeakObjectPtr<UInv_InventoryGrid> ActiveGrid;
 };
