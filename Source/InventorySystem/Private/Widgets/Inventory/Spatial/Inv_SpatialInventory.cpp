@@ -88,7 +88,7 @@ void UInv_SpatialInventory::EquippedSlottedItemClicked(UInv_EquippedSlottedItem*
 	UInv_InventoryItem* ItemToEquip = IsValid(GetHoverItem()) ? GetHoverItem()->GetInventoryItem() : nullptr;
 	UInv_InventoryItem* ItemToUnequip = EquippedSlottedItem->GetInventoryItem();
 
-	UInv_EquippedGridSlot* EquippedGridSlot = FindSlotWithEquippedItem(ItemToEquip);
+	UInv_EquippedGridSlot* EquippedGridSlot = FindSlotWithEquippedItem(ItemToUnequip);
 	
 	// 3. 해당 장착 슬롯의 InventoryItem을 nullptr로 설정하여 슬롯을 비웁니다.
 	ClearSlotOfItem(EquippedGridSlot);
@@ -97,13 +97,14 @@ void UInv_SpatialInventory::EquippedSlottedItemClicked(UInv_EquippedSlottedItem*
 	
 	// 4. 장착 슬롯에서 장착된 아이템 위젯을 제거합니다.
 	RemoveEquippedSlottedItem(EquippedSlottedItem);
-	
+
+	// Make Equipped Slotted Item
 	MakeEquippedSlottedItem(EquippedSlottedItem, EquippedGridSlot, ItemToEquip);
 
 	// 5. 장착과 해제에 관련된 델리게이트들을 브로드캐스트합니다.
 	//    - OnItemEquipped
 	//    - OnItemUnequipped
-
+	BroadcastSlotClickedDelegates(ItemToEquip, ItemToUnequip);
 	// ※ 해당 델리게이트는 서버 RPC를 통해 호출되며, Multicast RPC로 전체 클라이언트에 반영됩니다.
 
 }
@@ -336,7 +337,25 @@ void UInv_SpatialInventory::MakeEquippedSlottedItem(UInv_EquippedSlottedItem* Eq
 		ItemToEquip,
 		EquippedSlottedItem->GetEquipmentTypeTag(),
 		UInv_InventoryStatics::GetInventoryWidget(GetOwningPlayer())->GetTileSize());
-	SlottedItem->OnEquippedSlottedItemClicked.AddDynamic(this,  &ThisClass::EquippedSlottedItemClicked);
 
+	if (IsValid(SlottedItem))
+	{
+		SlottedItem->OnEquippedSlottedItemClicked.AddDynamic(this,  &ThisClass::EquippedSlottedItemClicked);
+	}
+	
 	EquippedGridSlot->SetEquippedSlottedItem(SlottedItem);
+}
+
+void UInv_SpatialInventory::BroadcastSlotClickedDelegates(UInv_InventoryItem* ItemToEquip, UInv_InventoryItem* ItemToUbEquip) const
+{
+	UInv_InventoryComponent* InventoryComponent = UInv_InventoryStatics::GetInventoryComponent(GetOwningPlayer());
+	check(IsValid(InventoryComponent));
+
+	InventoryComponent->Server_EquipSlotClicked(ItemToEquip, ItemToUbEquip);
+
+	if (GetOwningPlayer()->GetNetMode() == NM_DedicatedServer)
+	{
+		InventoryComponent->OnItemEquipped.Broadcast(ItemToEquip);
+		InventoryComponent->OnItemEquipped.Broadcast(ItemToUbEquip);
+	}
 }

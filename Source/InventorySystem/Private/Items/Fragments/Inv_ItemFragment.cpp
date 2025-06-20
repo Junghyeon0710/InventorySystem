@@ -41,7 +41,11 @@ void FInv_ImageFragment::Assimilate(UInv_CompositeBase* Composite) const
 void FInv_TextFragment::Assimilate(UInv_CompositeBase* Composite) const
 {
 	FInv_InventoryItemFragment::Assimilate(Composite);
-
+	if (!MatchesWidgetTag(Composite))
+	{
+		return;
+	}
+	
 	UInv_Leaf_Text* Text = Cast<UInv_Leaf_Text>(Composite);
 	if (!IsValid(Text))
 	{
@@ -54,7 +58,11 @@ void FInv_TextFragment::Assimilate(UInv_CompositeBase* Composite) const
 void FInv_LabeledNumberFragment::Assimilate(UInv_CompositeBase* Composite) const
 {
 	FInv_InventoryItemFragment::Assimilate(Composite);
-
+	if (!MatchesWidgetTag(Composite))
+	{
+		return;
+	}
+	
 	UInv_Leaf_LabeledValue* LabeledValue = Cast<UInv_Leaf_LabeledValue>(Composite);
 	if (!IsValid(LabeledValue))
 	{
