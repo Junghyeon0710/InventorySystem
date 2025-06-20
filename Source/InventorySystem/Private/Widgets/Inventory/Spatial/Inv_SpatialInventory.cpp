@@ -50,6 +50,8 @@ void UInv_SpatialInventory::EquippedGridSLotClicked(UInv_EquippedGridSlot* Equip
 	{
 		return;
 	}
+
+	
 }
 
 FReply UInv_SpatialInventory::NativeOnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)

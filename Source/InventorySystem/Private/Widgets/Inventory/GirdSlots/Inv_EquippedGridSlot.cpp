@@ -52,3 +52,7 @@ FReply UInv_EquippedGridSlot::NativeOnMouseButtonDown(const FGeometry& MyGeometr
 	EquippedGridSlotClicked.Broadcast(this, EquipmentTypeTag);
 	return FReply::Handled();
 }
+
+UInv_EquippedSlottedItem* UInv_EquippedGridSlot::OnItemEquipped(UInv_InventoryItem* Item, const FGameplayTag& EquipmentTag, float TileSize)
+{
+}
