@@ -38,7 +38,7 @@ void UInv_EquipmentComponent::InitInventoryComponent()
 		InventoryComponent->OnItemEquipped.AddDynamic(this, &ThisClass::OnItemEquipped);
 	}
 
-	if (!InventoryComponent->OnItemEquipped.IsAlreadyBound(this, &ThisClass::OnItemUnEquipped))
+	if (!InventoryComponent->OnItemUnEquipped.IsAlreadyBound(this, &ThisClass::OnItemUnEquipped))
 	{
 		InventoryComponent->OnItemUnEquipped.AddDynamic(this, &ThisClass::OnItemUnEquipped);
 	}
@@ -51,6 +51,25 @@ AInv_EquipActor* UInv_EquipmentComponent::SpawnEquippedActor(FInv_EquipmentFragm
 	SpawnedEquipActor->SetOwner(GetOwner());
 	EquipmentFragment->SetEquippedActor(SpawnedEquipActor);
 	return SpawnedEquipActor;
+}
+
+AInv_EquipActor* UInv_EquipmentComponent::FindEquippedActor(const FGameplayTag& EquipmentTypeTag)
+{
+	auto FoundActor = EquippedActors.FindByPredicate([&EquipmentTypeTag](const AInv_EquipActor* EquippedActor)
+	{
+		return EquippedActor->GetEquipmentType().MatchesTagExact(EquipmentTypeTag);
+	});
+
+	return FoundActor ? *FoundActor : nullptr;
+}
+
+void UInv_EquipmentComponent::RemoveEquippedActor(const FGameplayTag& EquipmentTypeTag)
+{
+	if (AInv_EquipActor* EquippedActor = FindEquippedActor(EquipmentTypeTag))
+	{
+		EquippedActors.Remove(EquippedActor);
+		EquippedActor->Destroy();
+	}
 }
 
 void UInv_EquipmentComponent::OnItemEquipped(UInv_InventoryItem* EquippedItem)
@@ -91,7 +110,7 @@ void UInv_EquipmentComponent::OnItemUnEquipped(UInv_InventoryItem* UnequippedIte
 		return;
 	}
 
-	if (!OwningPlayerController->HasAuthority())
+ 	if (!OwningPlayerController->HasAuthority())
 	{
 		return;
 	}
@@ -104,5 +123,7 @@ void UInv_EquipmentComponent::OnItemUnEquipped(UInv_InventoryItem* UnequippedIte
 	}
 
 	EquipmentFragment->OnUnequip(OwningPlayerController.Get());
+
+	RemoveEquippedActor(EquipmentFragment->GetEquipmentType());
 }
 

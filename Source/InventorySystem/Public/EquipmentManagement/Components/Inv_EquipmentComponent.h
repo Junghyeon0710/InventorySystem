@@ -13,6 +13,7 @@ class UInv_InventoryItem;
 class APlayerController;
 class USkeletalMeshComponent;
 struct FInv_ItemManifest;
+struct FGameplayTag;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
 class INVENTORYSYSTEM_API UInv_EquipmentComponent : public UActorComponent
@@ -42,4 +43,7 @@ private:
 
 	UPROPERTY()
 	TArray<TObjectPtr<AInv_EquipActor>> EquippedActors;
+
+	AInv_EquipActor* FindEquippedActor(const FGameplayTag& EquipmentTypeTag);
+	void RemoveEquippedActor(const FGameplayTag& EquipmentTypeTag);
 };

@@ -355,9 +355,9 @@ void UInv_SpatialInventory::BroadcastSlotClickedDelegates(UInv_InventoryItem* It
 
 	InventoryComponent->Server_EquipSlotClicked(ItemToEquip, ItemToUbEquip);
 
-	if (GetOwningPlayer()->GetNetMode() == NM_DedicatedServer)
+	if (GetOwningPlayer()->GetNetMode() != NM_DedicatedServer)
 	{
 		InventoryComponent->OnItemEquipped.Broadcast(ItemToEquip);
-		InventoryComponent->OnItemEquipped.Broadcast(ItemToUbEquip);
+		InventoryComponent->OnItemUnEquipped.Broadcast(ItemToUbEquip);
 	}
 }
