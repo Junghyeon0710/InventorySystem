@@ -88,7 +88,7 @@ private:
 	void EquippedGridSLotClicked(UInv_EquippedGridSlot* EquippedGridSlot,const FGameplayTag& EquipmentTypeTag);
 
 	UFUNCTION()
-	void EquippedSlottedItemClicked(UInv_EquippedSlottedItem* SlottedItem);
+	void EquippedSlottedItemClicked(UInv_EquippedSlottedItem* EquippedSlottedItem);
 	
 	UFUNCTION()
 	void ShowCraftables();
@@ -99,6 +99,7 @@ private:
 	void SetActiveGrid(UInv_InventoryGrid* Grid, UButton* Button);
 	void ClearSlotOfItem(UInv_EquippedGridSlot* EquippedGridSlot);
 	void RemoveEquippedSlottedItem(UInv_EquippedSlottedItem* EquippedSlottedItem);
+	void MakeEquippedSlottedItem(UInv_EquippedSlottedItem* EquippedSlottedItem, UInv_EquippedGridSlot* EquippedGridSlot, UInv_InventoryItem* ItemToEquip);
 	
 	TWeakObjectPtr<UInv_InventoryGrid> ActiveGrid;
 };

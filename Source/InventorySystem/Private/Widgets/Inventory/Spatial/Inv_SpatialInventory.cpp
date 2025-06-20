@@ -74,7 +74,7 @@ void UInv_SpatialInventory::EquippedGridSLotClicked(UInv_EquippedGridSlot* Equip
 	}
 }
 
-void UInv_SpatialInventory::EquippedSlottedItemClicked(UInv_EquippedSlottedItem* SlottedItem)
+void UInv_SpatialInventory::EquippedSlottedItemClicked(UInv_EquippedSlottedItem* EquippedSlottedItem)
 {
 	// 1. 아이템 설명이 표시되고 있었다면 제거합니다.
 	UInv_InventoryStatics::ItemUnHovered(GetOwningPlayer());
@@ -86,7 +86,7 @@ void UInv_SpatialInventory::EquippedSlottedItemClicked(UInv_EquippedSlottedItem*
 	// 2. 현재 클릭한 장착 슬롯 아이템이 소속된 EquippedGridSlot을 찾습니다.
 
 	UInv_InventoryItem* ItemToEquip = IsValid(GetHoverItem()) ? GetHoverItem()->GetInventoryItem() : nullptr;
-	UInv_InventoryItem* ItemToUnequip = SlottedItem->GetInventoryItem();
+	UInv_InventoryItem* ItemToUnequip = EquippedSlottedItem->GetInventoryItem();
 
 	UInv_EquippedGridSlot* EquippedGridSlot = FindSlotWithEquippedItem(ItemToEquip);
 	
@@ -96,15 +96,11 @@ void UInv_SpatialInventory::EquippedSlottedItemClicked(UInv_EquippedSlottedItem*
 	Grid_Equippables->AssignHoverItem(ItemToUnequip);
 	
 	// 4. 장착 슬롯에서 장착된 아이템 위젯을 제거합니다.
-	RemoveEquippedSlottedItem(SlottedItem);
+	RemoveEquippedSlottedItem(EquippedSlottedItem);
+	
+	MakeEquippedSlottedItem(EquippedSlottedItem, EquippedGridSlot, ItemToEquip);
 
-
-
-	// 6. 현재 HoverItem이 있다면 (즉, 뭔가 들고 있었다면)
-	//    - HoverItem의 아이템을 새로 장착할 아이템으로 간주하고
-	//    - 새로 장착 슬롯 아이템을 생성합니다.
-
-	// 7. 장착과 해제에 관련된 델리게이트들을 브로드캐스트합니다.
+	// 5. 장착과 해제에 관련된 델리게이트들을 브로드캐스트합니다.
 	//    - OnItemEquipped
 	//    - OnItemUnequipped
 
@@ -327,4 +323,20 @@ void UInv_SpatialInventory::RemoveEquippedSlottedItem(UInv_EquippedSlottedItem* 
 		EquippedSlottedItem->OnEquippedSlottedItemClicked.RemoveDynamic(this, &ThisClass::EquippedSlottedItemClicked);
 	}
 	EquippedSlottedItem->RemoveFromParent();
+}
+
+void UInv_SpatialInventory::MakeEquippedSlottedItem(UInv_EquippedSlottedItem* EquippedSlottedItem, UInv_EquippedGridSlot* EquippedGridSlot, UInv_InventoryItem* ItemToEquip)
+{
+	if (!IsValid(EquippedGridSlot))
+	{
+		return;
+	}
+
+	UInv_EquippedSlottedItem* SlottedItem = EquippedGridSlot->OnItemEquipped(
+		ItemToEquip,
+		EquippedSlottedItem->GetEquipmentTypeTag(),
+		UInv_InventoryStatics::GetInventoryWidget(GetOwningPlayer())->GetTileSize());
+	SlottedItem->OnEquippedSlottedItemClicked.AddDynamic(this,  &ThisClass::EquippedSlottedItemClicked);
+
+	EquippedGridSlot->SetEquippedSlottedItem(SlottedItem);
 }
