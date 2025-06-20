@@ -224,3 +224,8 @@ void FInv_EquipmentFragment::DestroyAttachedActor() const
 		EquippedActor->Destroy();
 	}
 }
+
+void FInv_EquipmentFragment::SetEquippedActor(AInv_EquipActor* EquipActor)
+{
+	EquippedActor = EquipActor;
+}

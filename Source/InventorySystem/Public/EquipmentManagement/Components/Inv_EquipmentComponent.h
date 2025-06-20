@@ -6,10 +6,13 @@
 #include "Components/ActorComponent.h"
 #include "Inv_EquipmentComponent.generated.h"
 
+struct FInv_EquipmentFragment;
+class AInv_EquipActor;
 class UInv_InventoryComponent;
 class UInv_InventoryItem;
 class APlayerController;
 class USkeletalMeshComponent;
+struct FInv_ItemManifest;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
 class INVENTORYSYSTEM_API UInv_EquipmentComponent : public UActorComponent
@@ -35,4 +38,8 @@ private:
 	void OnItemUnEquipped(UInv_InventoryItem* UnequippedItem);
 
 	void InitInventoryComponent();
+	AInv_EquipActor* SpawnEquippedActor(FInv_EquipmentFragment* EquipmentFragment, const FInv_ItemManifest& Manifest, USkeletalMeshComponent* AttachMesh);
+
+	UPROPERTY()
+	TArray<TObjectPtr<AInv_EquipActor>> EquippedActors;
 };
