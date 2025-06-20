@@ -31,8 +31,15 @@ void AInv_PlayerController::ToggleInventory()
 	{
 		return;
 	}
-
-	InventoryComponent->ToggleInventoryMenu();
+		InventoryComponent->ToggleInventoryMenu();
+	if (InventoryComponent->IsMenuOpen())
+	{
+		HUDWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
+	else
+	{
+		HUDWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
 }
 
 
