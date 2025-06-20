@@ -37,7 +37,8 @@ private:
 
 	UFUNCTION()
 	void OnItemUnEquipped(UInv_InventoryItem* UnequippedItem);
-
+	
+	void InitPlayerController();
 	void InitInventoryComponent();
 	AInv_EquipActor* SpawnEquippedActor(FInv_EquipmentFragment* EquipmentFragment, const FInv_ItemManifest& Manifest, USkeletalMeshComponent* AttachMesh);
 
@@ -46,4 +47,8 @@ private:
 
 	AInv_EquipActor* FindEquippedActor(const FGameplayTag& EquipmentTypeTag);
 	void RemoveEquippedActor(const FGameplayTag& EquipmentTypeTag);
+
+	UFUNCTION()
+	void OnPossessedPawnChanged(APawn* OldPawn, APawn* NewPawn);
+
 };
