@@ -46,6 +46,7 @@ public:
 	void DropItem();
 	bool HasHoverItem() const;
 	UInv_HoverItem* GetHoverItem() const;
+	float GetTileSize() const {return TileSize;}
 private:
 
 	TWeakObjectPtr<UInv_InventoryComponent> InventoryComponent;

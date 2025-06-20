@@ -17,6 +17,7 @@
 #include "Blueprint/WidgetTree.h"
 #include "Widgets/Inventory/GirdSlots/Inv_EquippedGridSlot.h"
 #include "Widgets/Inventory/HoverItem/Inv_HoverItem.h"
+#include "Widgets/Inventory/SlottedItems/Inv_EquippedSlottedItem.h"
 
 void UInv_SpatialInventory::NativeOnInitialized()
 {
@@ -50,8 +51,18 @@ void UInv_SpatialInventory::EquippedGridSLotClicked(UInv_EquippedGridSlot* Equip
 	{
 		return;
 	}
+	UInv_HoverItem* HoverItem = GetHoverItem();
+	const float TileSize = UInv_InventoryStatics::GetInventoryWidget(GetOwningPlayer())->GetTileSize();
+	UInv_EquippedSlottedItem* EquippedSlottedItem = EquippedGridSlot->OnItemEquipped(
+		HoverItem->GetInventoryItem(),
+		EquipmentTypeTag,
+		TileSize
+	);
+	EquippedSlottedItem->OnEquippedSlottedItemClicked.AddDynamic(this, &ThisClass::EquippedSlottedItemClicked);
+}
 
-	
+void UInv_SpatialInventory::EquippedSlottedItemClicked(UInv_EquippedSlottedItem* SlottedItem)
+{
 }
 
 FReply UInv_SpatialInventory::NativeOnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
@@ -182,6 +193,11 @@ UInv_HoverItem* UInv_SpatialInventory::GetHoverItem() const
 	}
 
 	return ActiveGrid->GetHoverItem();
+}
+
+float UInv_SpatialInventory::GetTileSize() const
+{
+	return Grid_Equippables->GetTileSize();
 }
 
 UInv_ItemDescription* UInv_SpatialInventory::GetItemDescription()
