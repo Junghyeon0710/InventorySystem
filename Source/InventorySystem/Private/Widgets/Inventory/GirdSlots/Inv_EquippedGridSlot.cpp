@@ -9,6 +9,7 @@
 #include "Items/Fragments/Inv_FragmentTags.h"
 #include "Items/Fragments/Inv_ItemFragment.h"
 #include "Widgets/Inventory/HoverItem/Inv_HoverItem.h"
+#include "Widgets/Inventory/SlottedItems/Inv_EquippedSlottedItem.h"
 
 void UInv_EquippedGridSlot::NativeOnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
@@ -70,7 +71,6 @@ UInv_EquippedSlottedItem* UInv_EquippedGridSlot::OnItemEquipped(UInv_InventoryIt
 	{
 		return nullptr;
 	}
-
 	const FIntPoint GridDimensions = GridFragment->GetGridSize();
 	
 	// 3. 그리드 크기를 바탕으로 슬롯 아이템의 그려질 크기(드로우 사이즈)를 계산합니다.
@@ -78,15 +78,20 @@ UInv_EquippedSlottedItem* UInv_EquippedGridSlot::OnItemEquipped(UInv_InventoryIt
 	const FVector2D DrawSize = GridDimensions * IconTileWidth;
 	
 	// 4. 새로운 장착 슬롯 아이템 위젯을 생성합니다.
-
+	EquippedSlottedItem = CreateWidget<UInv_EquippedSlottedItem>(GetOwningPlayer(), EquippedSlotClass);
+	
 	// 5. 새로 생성한 슬롯 아이템에 아이템 데이터를 세팅합니다.
-
+	EquippedSlottedItem->SetInventoryItem(Item);
+	
 	// 6. 슬롯 아이템에 장비 타입 태그를 세팅합니다.
-
+	EquippedSlottedItem->SetEquipmentTypeTag(EquipmentTag);
+	
 	// 7. 장착 아이템은 쌓을 수 없으니, 스택 카운트 위젯은 숨깁니다.
-
+	EquippedSlottedItem->UpdateStackCount(0);
+	
 	// 8. 장착 그리드 슬롯 자신도 현재 장착한 인벤토리 아이템을 추적할 수 있도록 세팅합니다.
-
+	SetInventoryItem(Item);
+	
 	// 9. 슬롯 아이템에 아이템 이미지를 세팅합니다.
 
 	// 10. 슬롯 아이템 위젯을 장착 그리드 슬롯 위젯에 자식으로 추가합니다.
