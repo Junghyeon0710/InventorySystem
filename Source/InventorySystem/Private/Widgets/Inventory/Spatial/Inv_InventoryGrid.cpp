@@ -656,8 +656,12 @@ void UInv_InventoryGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEve
 		return;
 	}
 
-	//호버 아이템 스왑
-	SwapWithHoverItem(ClickedInventoryItem,GridIndex);
+	if (CurrentQueryResult.ValidItem.IsValid())
+	{
+		//호버 아이템 스왑
+		SwapWithHoverItem(ClickedInventoryItem,GridIndex);
+	}
+
 }
 
 void UInv_InventoryGrid::CreateItemPopUp(const int32 GridIndex)
