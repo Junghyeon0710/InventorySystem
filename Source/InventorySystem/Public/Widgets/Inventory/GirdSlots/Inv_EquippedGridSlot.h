@@ -11,6 +11,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEquippedGridSlotClicked, UInv_Equi
 /**
  * 
  */
+class UImage;
 UCLASS()
 class INVENTORYSYSTEM_API UInv_EquippedGridSlot : public UInv_GridSlot
 {
@@ -26,4 +27,7 @@ public:
 private:
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	FGameplayTag EquipmentTypeTag;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> Image_GrayedOutIcon;
 };
