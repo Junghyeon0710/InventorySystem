@@ -8,8 +8,7 @@
 #include "Inv_EquippedGridSlot.generated.h"
 
 class UInv_EquippedSlottedItem;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEquippedGridSlotClicked, UInv_EquippedGridSlot*, GridSlot,
-                                             const FGameplayTag&, EquipmentTypeTag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEquippedGridSlotClicked, UInv_EquippedGridSlot*, GridSlot, const FGameplayTag&, EquipmentTypeTag);
 /**
  * 
  */
