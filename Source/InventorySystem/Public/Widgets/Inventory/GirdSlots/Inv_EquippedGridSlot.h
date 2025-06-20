@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Inv_GridSlot.h"
-#include "GameplayTagContainer.h""
+#include "GameplayTagContainer.h"
 #include "Inv_EquippedGridSlot.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEquippedGridSlotClicked, UInv_EquippedGridSlot*, GridSlot, const FGameplayTag&, EquipmentTypeTag);
