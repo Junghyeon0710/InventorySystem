@@ -89,6 +89,7 @@ private:
 	void ShowCraftables();
 	void DisableButton(UButton* Button);
 	void SetItemDescriptionSizeAndPosition(UInv_ItemDescription* Description, UCanvasPanel* Canvas) const;
+	bool CanEquipHoverItem(UInv_EquippedGridSlot* EquippedGridSlot, const FGameplayTag& EquipmentTypeTag) const;
 
 	void SetActiveGrid(UInv_InventoryGrid* Grid, UButton* Button);
 	TWeakObjectPtr<UInv_InventoryGrid> ActiveGrid;

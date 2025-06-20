@@ -123,13 +123,24 @@ void FInv_ManaPotionFragment::OnConsume(APlayerController* PC)
 
 void FInv_StrengthModifier::OnEquip(APlayerController* PC)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Item Equip, Strength %f",GetValue());
+	GEngine->AddOnScreenDebugMessage(
+	-1,
+	5.f,
+	FColor::Red,
+	FString::Printf(TEXT("Item Equip, Strength %f"), GetValue())
+);
 	
 }
 
 void FInv_StrengthModifier::OnUnequip(APlayerController* PC)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Item UnEquip, Strength %f",GetValue());
+	GEngine->AddOnScreenDebugMessage(
+	-1,
+	5.f,
+	FColor::Red,
+	FString::Printf(TEXT("Item UnEquip, Strength %f"), GetValue())
+);
+
 	
 }
 
