@@ -15,6 +15,7 @@
 #include "Widgets/Inventory/Spatial/Inv_InventoryGrid.h"
 #include "Widgets/ItemDescription/UInv_ItemDescription.h"
 #include "Blueprint/WidgetTree.h"
+#include "InventoryManagement/Components/Inv_InventoryComponent.h"
 #include "Widgets/Inventory/GirdSlots/Inv_EquippedGridSlot.h"
 #include "Widgets/Inventory/HoverItem/Inv_HoverItem.h"
 #include "Widgets/Inventory/SlottedItems/Inv_EquippedSlottedItem.h"
@@ -59,6 +60,18 @@ void UInv_SpatialInventory::EquippedGridSLotClicked(UInv_EquippedGridSlot* Equip
 		TileSize
 	);
 	EquippedSlottedItem->OnEquippedSlottedItemClicked.AddDynamic(this, &ThisClass::EquippedSlottedItemClicked);
+
+	Grid_Equippables->ClearHoverItem();
+
+	UInv_InventoryComponent* InventoryComponent = UInv_InventoryStatics::GetInventoryComponent(GetOwningPlayer());
+	check(IsValid(InventoryComponent))
+
+	InventoryComponent->Server_EquipSlotClicked(HoverItem->GetInventoryItem(),nullptr);
+
+	if (GetOwningPlayer()->GetNetMode() != NM_DedicatedServer)
+	{
+		InventoryComponent->OnItemEquipped.Broadcast(HoverItem->GetInventoryItem());
+	}
 }
 
 void UInv_SpatialInventory::EquippedSlottedItemClicked(UInv_EquippedSlottedItem* SlottedItem)
