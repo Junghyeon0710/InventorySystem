@@ -3,7 +3,10 @@
 
 #include "Widgets/Inventory/GirdSlots/Inv_EquippedGridSlot.h"
 
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/Image.h"
+#include "Components/Overlay.h"
+#include "Components/OverlaySlot.h"
 #include "InventoryManagement/Utils/Inv_InventoryStatics.h"
 #include "Items/Inv_InventoryItem.h"
 #include "Items/Fragments/Inv_FragmentTags.h"
@@ -93,9 +96,31 @@ UInv_EquippedSlottedItem* UInv_EquippedGridSlot::OnItemEquipped(UInv_InventoryIt
 	SetInventoryItem(Item);
 	
 	// 9. 슬롯 아이템에 아이템 이미지를 세팅합니다.
+	const FInv_ImageFragment* ImageFragment = GetFragment<FInv_ImageFragment>(Item, FragmentTags::IconFragment);
+	if (!ImageFragment)
+	{
+		return nullptr;
+	}
+
+	FSlateBrush Brush;
+	Brush.SetResourceObject(ImageFragment->GetIcon());
+	Brush.DrawAs = ESlateBrushDrawType::Image;
+	Brush.ImageSize = DrawSize;
+
+	EquippedSlottedItem->SetImageBrush(Brush);
 
 	// 10. 슬롯 아이템 위젯을 장착 그리드 슬롯 위젯에 자식으로 추가합니다.
+	Overlay_Root->AddChildToOverlay(EquippedSlottedItem);
+	FGeometry OverlayGeometry = Overlay_Root->GetCachedGeometry();
+	auto OverlayPos = OverlayGeometry.Position;
+	auto OverlaySize = OverlayGeometry.Size;
 
+	const float LeftPadding = OverlaySize.X / 2.f - DrawSize.X /2.f;
+	const float TopPadding = OverlaySize.Y / 2.f - DrawSize.Y /2.f;
+
+	UOverlaySlot* OverlaySlot = UWidgetLayoutLibrary::SlotAsOverlaySlot(EquippedSlottedItem);
+	OverlaySlot->SetPadding(FMargin(LeftPadding, TopPadding));
+	
 	// 11. 마지막으로 생성한 장착 슬롯 아이템 위젯을 반환합니다.
-
+	return EquippedSlottedItem;
 }
