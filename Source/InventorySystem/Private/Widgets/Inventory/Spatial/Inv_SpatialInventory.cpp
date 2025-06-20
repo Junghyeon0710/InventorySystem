@@ -77,9 +77,19 @@ void UInv_SpatialInventory::EquippedGridSLotClicked(UInv_EquippedGridSlot* Equip
 void UInv_SpatialInventory::EquippedSlottedItemClicked(UInv_EquippedSlottedItem* SlottedItem)
 {
 	// 1. 아이템 설명이 표시되고 있었다면 제거합니다.
+	UInv_InventoryStatics::ItemUnHovered(GetOwningPlayer());
 
+	if (IsValid(GetHoverItem()) && GetHoverItem()->IsStackable())
+	{
+		return;
+	}
 	// 2. 현재 클릭한 장착 슬롯 아이템이 소속된 EquippedGridSlot을 찾습니다.
 
+	UInv_InventoryItem* ItemToEquip = IsValid(GetHoverItem()) ? GetHoverItem()->GetInventoryItem() : nullptr;
+	UInv_InventoryItem* ItemToUnequip = SlottedItem->GetInventoryItem();
+
+	UInv_EquippedGridSlot* EquippedGridSlot = FindSlotWithEquippedItem(ItemToEquip);
+	
 	// 3. 해당 장착 슬롯의 InventoryItem을 nullptr로 설정하여 슬롯을 비웁니다.
 
 	// 4. 장착 슬롯에서 장착된 아이템 위젯을 제거합니다.
@@ -157,6 +167,15 @@ bool UInv_SpatialInventory::CanEquipHoverItem(UInv_EquippedGridSlot* EquippedGri
 		!HoverItem->IsStackable() &&
 			HeldItem->GetItemManifest().GetItemCategory() == EInv_ItemCategory::Equippable &&
 				HeldItem->GetItemManifest().GetItemType().MatchesTag(EquipmentTypeTag);
+}
+
+UInv_EquippedGridSlot* UInv_SpatialInventory::FindSlotWithEquippedItem(UInv_InventoryItem* EquippedItem) const
+{
+	auto* FoundEquippedGridSlot = EquippedGridSlots.FindByPredicate([EquippedItem](const UInv_GridSlot* GridSlot)
+	{
+		return GridSlot->GetInventoryItem() == EquippedItem;
+	});
+	return FoundEquippedGridSlot ? *FoundEquippedGridSlot : nullptr;
 }
 
 FInv_SlotAvailabilityResult UInv_SpatialInventory::HasRoomForItem(UInv_ItemComponent* ItemComponent) const
