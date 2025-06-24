@@ -1,14 +1,13 @@
 ## Unreal5 : Grid Inventory
 공부 목적으로 제작된 간단한 네트워크 인벤토리 토이 프로젝트입니다.
 
-| 항목       | 내용                           |
-|------------|--------------------------------|
-| 엔진       | Unreal Engine 5.6              |
-| IDE        | Rider                          |
-| 툴         | C++, Blueprint 혼합 사용       |
-| 인원       | 개인 개발                      |
-| 아키텍처   | Fragment System, Plugin        |
-| UI         | Composite Pattern              |
+
+- 엔진 : Unreal Engine 5.6              
+- IDE : Rider                          
+- 툴 : C++, Blueprint 혼합 사용       
+- 인원 : 개인 개발                      
+- 아키텍처 : Fragment System, Plugin        
+- UI : Composite Pattern              
 
 ## 영상
 
@@ -180,5 +179,7 @@ Widget->SetGridDimensions(GridFragment->GetGridSize())
 - 내부의 여러 하위 위젯들이 자동으로 자신의 프래그먼트 정보를 받아서 UI를 구성
 
 <br>
+
 ## Composite Pattern 설계
+
 
