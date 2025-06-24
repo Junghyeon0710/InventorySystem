@@ -49,6 +49,8 @@ private:
 - virtual ~Destructor(): 상속받은 구조체를 부모 포인터로 안전하게 삭제하기 위해 가상함수로 만들어 줬습니다.
 - Fragment의 정체성을 위한 GameplayTag 사용했습니다. 이를 통해 프래그먼트를 찾거나 구분할 수 있게 설계
 
+
+
 ## Child Fragment 예시
 ```C++
 USTRUCT(BlueprintType)
@@ -69,9 +71,16 @@ private:
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	float GridPadding{0.f};
 };
+
 ```
 - FInv_ItemFragment을 상속받아 데이터를 넣어줍니다.
-- 앞으로 Fragment를 조합하여 아이템을 만드는 방식
+- 아이템이 인벤토리에서 차지하는 공간과 패딩 정보를 담당하는 프래그먼트
+- 다양한 속성은 각각의 Fragment로 확장할 수 있음
+
+
+
+
+
 
 ## Fragment 사용하기
 > 아이템 컴포넌트가 갖고 있는 ItemManifest
@@ -84,7 +93,81 @@ TArray<TInstancedStruct<FInv_ItemFragment>> Fragments;
   
 > 아이템 사용 예시
 
+![Image](https://github.com/user-attachments/assets/c7f4047d-a974-4e70-aa64-23079480e6b1)
 
+- 아이템마다 필요한 Fragment를 조합해 기능을 부여
+- 유연하고 재사용성 높은 설계를 가능하게 함
+
+>유틸 함수 제공
+#### 아이템에 포함된 Fragment들을 간단하게 조회할 수 있도록 다음과 같은 템플릿 기반 유틸리티 함수들을 제공합니다.
+```C++
+template<typename T> requires std::derived_from<T, FInv_ItemFragment> //  requires std::derived_from<T, FInv_ItemFragment> 해당 파생된게 아니면 컴파일 단에서 에러
+const T* FInv_ItemManifest::GetFragmentOfTypeWithTag(const FGameplayTag& FragmentTag) const
+{
+	for (const TInstancedStruct<FInv_ItemFragment>& Fragment : Fragments)
+	{
+		if (const T* FragmentPtr = Fragment.GetPtr<T>())
+		{
+			if (FragmentPtr->GetFragmentTag().IsValid() || FragmentPtr->GetFragmentTag().MatchesTagExact(FragmentTag))
+			{
+				return FragmentPtr;
+			}
+		}
+	}
+	return nullptr;
+}
+
+template <typename T> requires std::derived_from<T, FInv_ItemFragment>
+const T* FInv_ItemManifest::GetFragmentOfType() const
+{
+	for (const TInstancedStruct<FInv_ItemFragment>& Fragment : Fragments)
+	{
+		if (const T* FragmentPtr = Fragment.GetPtr<T>())
+		{
+			return FragmentPtr;
+		}
+	}
+	return nullptr;
+}
+
+template <typename T> requires std::derived_from<T, FInv_ItemFragment>
+T* FInv_ItemManifest::GetFragmentOfTypeMutable()
+{
+	for (TInstancedStruct<FInv_ItemFragment>& Fragment : Fragments)
+	{
+		if (T* FragmentPtr = Fragment.GetMutablePtr<T>())
+		{
+			return FragmentPtr;
+		}
+	}
+	return nullptr;
+}
+
+template <typename T> requires std::derived_from<T, FInv_ItemFragment>
+TArray<const T*> FInv_ItemManifest::GetAllFragmentOfType() const
+{
+	TArray<const T*> Result;
+	for (const TInstancedStruct<FInv_ItemFragment>& Fragment : Fragments)
+	{
+		if (const T* FragmentPtr = Fragment.GetPtr<T>())
+		{
+			Result.Add(FragmentPtr);
+		}
+	}
+	return Result;
+}
+```
+- 유틸 함수로 아이템의 Fragment를 쉽게 찾아 해당 Fragment의 맞는 기능을 구현하계 설계
+- std::derived_from<T, FInv_ItemFragment> 제약 조건을 통해 컴파일 타임 타입 안전성 보장
+
+>사용 예시 
+```C++
+const FInv_GridFragment* GridFragment = GetFragment<FInv_GridFragment>(Item,FragmentTags::GridFragment);
+Widget->SetGridDimensions(GridFragment->GetGridSize())	
+```
+- 특정 Item에서 GridFragment를 찾아 UI 위젯에 설정
+- Fragment 기반 설계 덕분에 각 기능은 개별 프래그먼트로 분리되고, 필요시 해당 프래그먼트를 찾아 기능을 호출할 수 있도록 설계됨
+  
 
 
 
