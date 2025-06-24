@@ -18,7 +18,7 @@
 - Instanced Struct을 이용한 최적화
 - UObject를 위한 컴포넌트 방식
 
-
+<br>
 
 ## Fragment 설계
 ```C++
@@ -49,7 +49,7 @@ private:
 - virtual ~Destructor(): 상속받은 구조체를 부모 포인터로 안전하게 삭제하기 위해 가상함수로 만들어 줬습니다.
 - Fragment의 정체성을 위한 GameplayTag 사용했습니다. 이를 통해 프래그먼트를 찾거나 구분할 수 있게 설계
 
-
+<br>
 
 ## Child Fragment 예시
 ```C++
@@ -78,8 +78,8 @@ private:
 - 다양한 속성은 각각의 Fragment로 확장할 수 있음
 
 
-
-
+<br>
+<br>
 
 
 ## Fragment 사용하기
@@ -89,7 +89,8 @@ UPROPERTY(EditAnywhere, Category="Inventory" , meta = (ExcludeBaseStruct))
 TArray<TInstancedStruct<FInv_ItemFragment>> Fragments;
 ```
 - 아이템 컴포넌트에 배열로 갖습니다.
-- TInstancedStruct 사용으로 UObject클래스 보다 최적화 적용
+- TInstancedStruct 사용으로 UObject클래스 보다 최적화 적용했습니다.
+-  대신 UObject가 지원하는 UFCUTION매크로, 타이머 등등 사용하지 못하는 제약이 있었습니다.
   
 > 아이템 사용 예시
 
@@ -169,7 +170,15 @@ Widget->SetGridDimensions(GridFragment->GetGridSize())
 - Fragment 기반 설계 덕분에 각 기능은 개별 프래그먼트로 분리되고, 필요시 해당 프래그먼트를 찾아 기능을 호출할 수 있도록 설계됨
   
 
+<br>
+<br>
 
+# Composite Pattern
+- Composite 패턴을 활용한 Item Description 위젯 구성
+- 해당 속성의 프래그먼트(Fragment)**가 없으면 보여주지 않도록 설계
+- ItemDescriptionWidget(부모) 하나에 단일 함수만 호출
+- 내부의 여러 하위 위젯들이 자동으로 자신의 프래그먼트 정보를 받아서 UI를 구성
 
-
+<br>
+## Composite Pattern 설계
 
