@@ -289,20 +289,190 @@ public:
 - ApplyFunction() 오버라이드: 받은 함수에 자기 자신을 인자로 넘겨 실행.
 
 <br>
-> UInv_Leaf.cpp
+>UInv_Leaf.cpp
+
 ```C++
 void UInv_Leaf::ApplayFunction(FuncType Function)
 {
 	Function(this);
 }
 ```
+
 - 자기 자신을 인자로 넘겨서 호출
 - 이렇게 하면 실제로 ApplayFunction호출 하는곳에서 매개변수로 Leaf인 자기 자신이 매개변수로 들어옴
 
 <br>
 
-##Composite Pattern 사용
+## Composite Pattern 사용
+``` C++
+UCLASS()
+class INVENTORYSYSTEM_API UInv_ItemDescription : public UInv_Composite
+{
+	GENERATED_BODY()
+public:
+
+		FVector2D GetSize() const;
+	virtual void SetVisibility(ESlateVisibility InVisibility) override;
+private:
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<USizeBox> SizeBox;
+};
+```
+
+- 위젯트리 중 가장 위에 있는(자식을 다 갖고 있는) 부모를 Composite변경
+- ApplyFunction()을 호출하면, 자식 위젯들에도 자동으로 전파
+
+  <br>
+
+  
+
+### 인벤토리 아이템에 마우스 hover시 발생하는 콜백 함수
+```C++
+void UInv_SpatialInventory::OnItemHovered(UInv_InventoryItem* Item)
+{
+	const auto& Manifest = Item->GetItemManifest();
+	UInv_ItemDescription* DescriptionWidget = GetItemDescription();
+	DescriptionWidget->SetVisibility(ESlateVisibility::Collapsed);
+
+	GetOwningPlayer()->GetWorldTimerManager().ClearTimer(DescriptionTimer);
+
+	FTimerDelegate DescriptionTimerDelegate;
+	DescriptionTimerDelegate.BindLambda([this, &Manifest, DescriptionWidget]()
+	{
+		GetItemDescription()->SetVisibility(ESlateVisibility::HitTestInvisible);
+		Manifest.AssimilateInventoryFragment(DescriptionWidget);
+	});
+
+	GetOwningPlayer()->GetWorldTimerManager().SetTimer(DescriptionTimer, DescriptionTimerDelegate, DescriptionTimerDelay, false);
+}
+```
+- 마우스가 아이템 hover시 아이템한테 Composite위젯인 DescriptionWidget을 넘겨줍니다.
+- Manifest는 아이템의 정보를 갖고있는 구조체입니다. 
+- 타이머를 설정해 DescriptionTimerDelay값 만큼 hover되면 아이템 설명창 보이게 설계
+
+>AssimilateInventoryFragment 함수 내부
+
+``` C++
+void FInv_ItemManifest::AssimilateInventoryFragment(UInv_CompositeBase* Composite) const
+{
+	const auto& InventoryItemFragments = GetAllFragmentOfType<FInv_InventoryItemFragment>();
+	for (const auto* Fragment : InventoryItemFragments)
+	{
+		Composite->ApplayFunction([Fragment](UInv_CompositeBase* Widget)
+		{
+			Fragment->Assimilate(Widget);
+		});
+	}
+}
+```
+
+- Composite인 DescriptionWidget을 받아 ApplayFunction호출
+- Composite은 자식들을 재귀적으로 호출해줌
+- Fragment로 위젯 전달
+
+<br>
+
+## Fragment와 Composite관계
+### 위에서 봤듯이 Fragment에 위젯을 넘겨줌으로써 Fragment에서 기능을 구현하는 것을 알 수 있음
 
 
+## FInv_TextFragment 예시
+> FInv_TextFragment.h
+```C++
+USTRUCT(BlueprintType)
+struct FInv_TextFragment : public FInv_InventoryItemFragment
+{
+	GENERATED_BODY()
 
+	FText GetText() const {return FragmentText;}
+	void SetText(const FText& Text) {FragmentText = Text;}
+	virtual void Assimilate(UInv_CompositeBase* Composite) const override;
+
+	
+private:
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	FText FragmentText;
+};
+```
+- Assimilate호출 함으로써 실질적으로 위젯을 변경하는 함수
+
+> FInv_TextFragment.cpp
+```C++
+void FInv_TextFragment::Assimilate(UInv_CompositeBase* Composite) const
+{
+	FInv_InventoryItemFragment::Assimilate(Composite);
+	if (!MatchesWidgetTag(Composite))
+	{
+		return;
+	}
+	
+	UInv_Leaf_Text* Text = Cast<UInv_Leaf_Text>(Composite);
+	if (!IsValid(Text))
+	{
+		return;
+	}
+
+	Text->SetText(FragmentText);
+}
+```
+- 태그로 위젯태그랑 Fragment태그랑 맞는지 체크
+- UInv_Leaf_Text위젯으로 형변환
+- 텍스트 변경
+
+### 에디터에서 하는 방법 
+
+#### Leaf 클래스를 상속받는 UInv_Leaf_Text클래스 만들어줌
+```C++
+UCLASS()
+class INVENTORYSYSTEM_API UInv_Leaf_Text : public UInv_Leaf
+{
+	GENERATED_BODY()
+public:
+	void SetText(const FText& Text) const;
+	virtual void NativePreConstruct() override;
+private:
+
+	UPROPERTY(meta  = (BindWidget))
+	TObjectPtr<UTextBlock> Text_LeafText;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	int32 FontSize{12};
+};
+```
+- 텍스를 변경하는 위젯으로 설계
+
+#### UInv_Leaf_Text클래스를 상속 받는 위젯을 만들어줌
+![Image](https://github.com/user-attachments/assets/4a27f36d-d2e6-475c-a702-cf381d1b8b13)
+- TextBlock을 정확히 일치 시켜줌
+- 태그를 FragmentTags.ItemNameFragment로 설정
+
+<br> 
+
+> ItemDescription 위젯
+![Image](https://github.com/user-attachments/assets/d95bf93b-385f-4e21-99b3-e618e8fd0a9d)
+- Composite위젯인 ItemDescription자식트리로 넣어줌
+
+<br>
+
+> ItemComponent의 Fragmnets
+
+<br>
+
+![Image](https://github.com/user-attachments/assets/7b54c1f7-a8f2-4a4f-a7ee-84bc2c825907)
+- 아이템에 Inv_TextFragment를 넣어줌
+
+<br>
+
+>실행화면
+
+<br>
+
+![Image](https://github.com/user-attachments/assets/692a10ff-06c1-42b7-ad78-572a8c629bcc)
+- 위에서 설정한 Text로 설정됨
+- Composite 패턴과 Fragmnet 조합으로 아이템 설명을 다 다르게 설계 가능
+- Tag를 이용해 Fragment와 Widget 식별 가능 
+
+  
 
