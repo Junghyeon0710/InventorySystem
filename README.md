@@ -10,6 +10,7 @@
 - UI : Composite Pattern              
 
 ## 영상
+[![Video Thumbnail](https://img.youtube.com/vi/qiFkCeTxbSs/0.jpg)](https://www.youtube.com/watch?v=qiFkCeTxbSs)
 
 # Item Fragments
 - 컴포넌트 기반 아키텍처(Fragment 시스템)
