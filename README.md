@@ -8,7 +8,9 @@
 - 인원 : 개인 개발                      
 - 아키텍처 : Fragment System, Plugin        
 - UI : Composite Pattern
-- 네트워크 : RPC, FastArraySerializer, Replication        
+- 네트워크 : RPC, FastArraySerializer, Replication
+
+  <br>
 
 ## 영상
 [![Video Thumbnail](https://img.youtube.com/vi/qiFkCeTxbSs/0.jpg)](https://www.youtube.com/watch?v=qiFkCeTxbSs)
@@ -389,8 +391,9 @@ void FInv_ItemManifest::AssimilateInventoryFragment(UInv_CompositeBase* Composit
 ## Fragment와 Composite관계
 ### 위에서 봤듯이 Fragment에 위젯을 넘겨줌으로써 Fragment에서 기능을 구현하는 것을 알 수 있음
 
+<br>
 
-## FInv_TextFragment 예시
+### FInv_TextFragment 예시
 > FInv_TextFragment.h
 ```C++
 USTRUCT(BlueprintType)
@@ -433,6 +436,8 @@ void FInv_TextFragment::Assimilate(UInv_CompositeBase* Composite) const
 - 태그로 위젯태그랑 Fragment태그랑 맞는지 체크
 - UInv_Leaf_Text위젯으로 형변환
 - 텍스트 변경
+
+<br>
 
 ### 에디터에서 하는 방법 
 
