@@ -13,6 +13,17 @@
 ## 영상
 [![Video Thumbnail](https://img.youtube.com/vi/qiFkCeTxbSs/0.jpg)](https://www.youtube.com/watch?v=qiFkCeTxbSs)
 
+<br>
+
+## 플러그인 구성
+### Component Architecture
+#### 이 프로젝트는 언리얼 엔진 플러그인 형태로 제작되었습니다.
+따라서 어떤 프로젝트에서도 쉽게 재사용 가능하며, 다음과 같이 간단하게 사용할 수 있습니다:
+- PlayerController에 InventoryComponent를 추가하면 인벤토리 시스템 사용 가능
+- 아이템 액터에 ItemComponent만 붙이면 인벤토리에 바로 등록 가능
+
+<br>
+
 # Item Fragments
 - 컴포넌트 기반 아키텍처(Fragment 시스템)
 - Lyra Fragment방식
@@ -644,4 +655,4 @@ void FInv_InventoryFastArray::PostReplicatedAdd(const TArrayView<int32> AddedInd
 }
 ```
 - 위에서 복제된 배열이 추가 됐으로 FastArray에서 PostReplicatedAdd가 자동으로 호출됨
-- IC->OnItemAdded.Broadcast(Entries[Index].Item); 클라는 여기서 해줌
+- IC->OnItemAdded.Broadcast(Entries[Index].Item); 클라는 여기서 호출
