@@ -7,7 +7,8 @@
 - 툴 : C++, Blueprint 혼합 사용       
 - 인원 : 개인 개발                      
 - 아키텍처 : Fragment System, Plugin        
-- UI : Composite Pattern              
+- UI : Composite Pattern
+- 네트워크 : RPC, FastArraySerializer, Replication        
 
 ## 영상
 [![Video Thumbnail](https://img.youtube.com/vi/qiFkCeTxbSs/0.jpg)](https://www.youtube.com/watch?v=qiFkCeTxbSs)
@@ -475,5 +476,172 @@ private:
 - Composite 패턴과 Fragmnet 조합으로 아이템 설명을 다 다르게 설계 가능
 - Tag를 이용해 Fragment와 Widget 식별 가능 
 
-  
+<br>
 
+## 네트워크 시스템
+### FastArraySerializer
+- 언리얼은 배열을 복제하면 배열에 있는 값이 하나만 변경되도 전부다 복제되는 방식
+- 그럴 때 사용하는게 FastArraySerializer
+- 변경된 항목만 복제하는 델타 복제(Delta Replication)
+
+<br>
+
+### FastArraySerializer사용하기
+> FInvInventoryEntry
+```C++
+USTRUCT(BlueprintType)
+struct FInv_InventoryEntry : public FFastArraySerializerItem
+{
+	GENERATED_BODY()
+
+	FInv_InventoryEntry() {}
+
+private:
+	friend struct FInv_InventoryFastArray;
+	friend UInv_InventoryComponent;
+
+	UPROPERTY()
+	TObjectPtr<UInv_InventoryItem> Item = nullptr;
+};
+```
+- 배열안에 있는 하나의 Entry
+- FastArraySerializer 시스템을 사용하려면, 배열의 각 항목(엔트리)이 이 클래스를 상속
+- 내부적으로 복제 비교, 추가/삭제 추적, 복제 ID 관리 등을 처리
+
+<br>
+
+> FInv_InventoryFastArray
+```c++
+USTRUCT(BlueprintType)
+struct FInv_InventoryFastArray : public FFastArraySerializer
+{
+	GENERATED_BODY()
+
+	FInv_InventoryFastArray() : OwnerComponent(nullptr) {}
+	FInv_InventoryFastArray(UActorComponent* InOwnerComponent) : OwnerComponent(InOwnerComponent) {}
+
+	TArray<UInv_InventoryItem*> GetAllItems() const;
+
+	// FFastArraySerializer contract
+	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
+	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
+	// End of FFastArraySerializer contract
+
+	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParams)
+	{
+		return FastArrayDeltaSerialize<FInv_InventoryEntry, FInv_InventoryFastArray>(Entries, DeltaParams, *this);
+	}
+
+	UInv_InventoryItem* AddEntry(UInv_ItemComponent* ItemComponent);
+	UInv_InventoryItem* AddEntry(UInv_InventoryItem* Item);
+	void RemoveEntry(UInv_InventoryItem* Item);
+	UInv_InventoryItem* FindFirstItemByType(const FGameplayTag& ItemType);
+
+private:
+	friend UInv_InventoryComponent;
+
+	// Replicated list of items
+	UPROPERTY()
+	TArray<FInv_InventoryEntry> Entries;
+
+	UPROPERTY(NotReplicated)
+	TObjectPtr<UActorComponent> OwnerComponent;
+};
+```
+- 이 클래스를 상속함으로써, 배열 단위의 델타 복제가 가능
+- 변경된 부분만 자동으로 전송
+
+<br>
+
+### 델타 복제 등록 (TypeTraits 설정)
+```C++
+template<>
+struct TStructOpsTypeTraits<FInvInventoryFastArray> : public TStructOpsTypeTraitsBase2<FInvInventoryFastArray>
+{
+    enum { WithNetDeltaSerializer = true };
+};
+```
+- FInvInventoryFastArray가 델타 복제 대상으로 엔진에 등록
+- 언리얼 엔진의 리플렉션(Reflection) 시스템에, FInvInventoryFastArray라는 구조체는 델타 직렬화(Net Delta Serialize) 를 사용한다고 명시
+
+<br>
+
+### RPC
+>InventoryComponent
+```C++
+	UFUNCTION(Server, Reliable)
+	void Server_AddNewItem(UInv_ItemComponent* ItemComponent, int32 StackCount);
+
+	UFUNCTION(Server, Reliable)
+	void Server_AddStacksToItem(UInv_ItemComponent* ItemComponent, int32 StackCount, int32 Remainder);
+
+	UFUNCTION(Server, Reliable)
+	void Server_DropItem(UInv_InventoryItem* Item, int32 StackCount);
+
+	UFUNCTION(Server, Reliable)
+	void Server_ConsumeItem(UInv_InventoryItem* Item);
+
+	UFUNCTION(Server, Reliable)
+	void Server_EquipSlotClicked(UInv_InventoryItem* ItemToEquip, UInv_InventoryItem* ItemToUnequip);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_EquipSlotClicked(UInv_InventoryItem* ItemToEquip, UInv_InventoryItem* ItemToUnequip);
+```
+- 아이템에 대한 행동은 서버에서 이루어짐
+- 아이템 추가, 아이템 드랍, 아이템 사용 등등
+
+### Replication
+>InventoryComponent.h
+```C++
+	UPROPERTY(Replicated)
+	FInv_InventoryFastArray InventoryList;
+```
+> InventoryComponent.cpp
+```C++
+void UInv_InventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, InventoryList);
+}
+```
+- Inv_InventoryFastArray을 복제
+- 위에서 만든 FastArray이므로 델타 복제, 변경된 것만 알려줌
+
+<br>
+### RPC+Replication 사용
+> 아이템을 추가해주는 서버 RPC
+
+```C++
+void UInv_InventoryComponent::Server_AddNewItem_Implementation(UInv_ItemComponent* ItemComponent, int32 StackCount)
+{
+	UInv_InventoryItem* NewItem = InventoryList.AddEntry(ItemComponent);
+	NewItem->SetTotalStackCount(StackCount);
+
+	if (GetOwner()->GetNetMode() == NM_ListenServer || GetOwner()->GetNetMode() == NM_Standalone)
+	{
+		OnItemAdded.Broadcast(NewItem);
+	}
+
+	ItemComponent->PickedUp();
+}
+```
+- UInv_InventoryItem* NewItem = InventoryList.AddEntry(ItemComponent); 줄에서 복제된 변수인 InventoryList에 Add해주는거를 볼 수 있음
+- Server이면 바로  OnItemAdded.Broadcast(NewItem) 호출
+
+  <br>
+
+```C++  
+void FInv_InventoryFastArray::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
+{
+	UInv_InventoryComponent* IC = Cast<UInv_InventoryComponent>(OwnerComponent);
+	if (!IsValid(IC)) return;
+    	
+	for (int32 Index : AddedIndices)
+	{
+		IC->OnItemAdded.Broadcast(Entries[Index].Item);
+	}
+}
+```
+- 위에서 복제된 배열이 추가 됐으로 FastArray에서 PostReplicatedAdd가 자동으로 호출됨
+- IC->OnItemAdded.Broadcast(Entries[Index].Item); 클라는 여기서 해줌
