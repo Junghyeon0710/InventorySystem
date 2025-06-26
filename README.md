@@ -625,6 +625,7 @@ void UInv_InventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 - 위에서 만든 FastArray이므로 델타 복제, 변경된 것만 알려줌
 
 <br>
+
 ### RPC+Replication 사용
 > 아이템을 추가해주는 서버 RPC
 
